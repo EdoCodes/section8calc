@@ -1,0 +1,59 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import Section8Calculator from '../../../components/Section8Calculator.astro';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: 'Calculadora Section 8',
+  inLanguage: 'es',
+  applicationCategory: 'FinanceApplication',
+  operatingSystem: 'Any',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  description:
+    'Estime elegibilidad del voucher de elección de vivienda Section 8 y ayuda mensual por ZIP, ciudad, condado e ingreso.',
+};
+---
+
+<BaseLayout
+  title="Calculadora Section 8 por ZIP — Elegibilidad y renta estimada"
+  description="Calculadora Section 8: ingrese ZIP, confirme ciudad y condado, y estime elegibilidad del voucher, límites de ingreso y ayuda mensual."
+  canonicalPath="/es/calculadora/"
+  lang="es"
+>
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  </Fragment>
+
+  <section class="calc-page-hero">
+    <div class="container">
+      <h1>Su estimación Section 8 en tres pasos</h1>
+      <p>
+        Búsqueda por ZIP, límites de ingreso HUD y renta de mercado justa — los mismos datos que usan las autoridades de vivienda.
+      </p>
+      <div class="badge-row">
+        <span class="calc-hero-badge">Límites de ingreso HUD</span>
+        <span class="calc-hero-badge">FMR (renta de mercado)</span>
+        <span class="calc-hero-badge">Gratis</span>
+      </div>
+    </div>
+  </section>
+
+  <Section8Calculator lang="es" />
+
+  <section class="container calc-how-it-works">
+    <div class="card">
+      <h2>Cómo funciona esta estimación</h2>
+      <ol>
+        <li><strong>ZIP</strong> identifica su ciudad y condado.</li>
+        <li><strong>Límites de ingreso HUD</strong> definen elegibilidad de ingreso muy bajo / bajo.</li>
+        <li><strong>Fair Market Rent</strong> establece el estándar de pago (usamos 100% del FMR salvo que su PHA publique otro valor).</li>
+        <li><strong>Pago del inquilino (TTP)</strong> es el mayor entre 30% del ingreso ajustado, 10% del ingreso bruto, o el mínimo de la PHA.</li>
+        <li><strong>Subvención máxima</strong> = estándar de pago menos su parte como inquilino.</li>
+      </ol>
+      <p>
+        <a href="/calculator/">Versión en inglés</a> · Guías en inglés en <a href="/guides/">/guides/</a>
+      </p>
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,16 @@
+---
+import { alternateLangPath, getSiteStrings, type Lang } from '../lib/i18n';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const s = getSiteStrings(lang);
+const href = alternateLangPath(Astro.url.pathname, lang);
+---
+
+<a class="lang-switch" href={href} aria-label={s.langSwitchLabel} data-analytics="lang_switch">
+  <span class="lang-switch__icon" aria-hidden="true">🌐</span>
+  {s.langSwitch}
+</a>

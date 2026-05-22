@@ -1,115 +1,161 @@
 ---
-/** Interactive Section 8 calculator — ZIP confirms city & county, then estimates help. */
+import '../styles/calculator.css';
+import { getCalcStrings, type Lang } from '../lib/i18n';
+
+interface Props {
+  lang?: Lang;
+}
+
+const lang = Astro.props.lang ?? 'en';
+const t = getCalcStrings(lang);
+const locale = lang === 'es' ? 'es-US' : 'en-US';
 ---
 
-<section class="card calculator" id="section8-calculator">
-  <h2>Section 8 eligibility &amp; rent estimate</h2>
-  <p>Enter your ZIP to load city and county — confirm your area, then see income limits and estimated voucher help.</p>
+<section class="calc-shell" id="section8-calculator" data-lang={lang}>
+  <div class="container calc-layout">
+    <div class="calc-panel">
+      <div class="calc-panel__head">
+        <h2>{t.title}</h2>
+        <p>{t.subtitle}</p>
+      </div>
 
-  <form id="calc-form" novalidate>
-    <fieldset>
-      <legend class="hidden">Location</legend>
-      <div class="form-row cols-3">
-        <div class="form-field">
-          <label for="zip">ZIP code</label>
-          <input id="zip" name="zip" inputmode="numeric" pattern="\d{5}" maxlength="5" placeholder="80204" required />
-          <small>We'll look up matching cities and counties.</small>
+      <div class="calc-steps" aria-hidden="true">
+        <div class="calc-step-pill is-active">
+          <span class="calc-step-num">1</span>
+          {t.stepLocation}
         </div>
-        <div class="form-field">
-          <label for="city">City</label>
-          <select id="city" name="city" disabled required>
-            <option value="">Enter ZIP first</option>
-          </select>
+        <div class="calc-step-pill">
+          <span class="calc-step-num">2</span>
+          {t.stepHousehold}
         </div>
-        <div class="form-field">
-          <label for="county">County</label>
-          <select id="county" name="county" disabled required>
-            <option value="">Enter ZIP first</option>
-          </select>
+        <div class="calc-step-pill">
+          <span class="calc-step-num">3</span>
+          {t.stepResults}
         </div>
       </div>
-      <p id="location-status" class="hidden" role="status"></p>
-    </fieldset>
 
-    <fieldset>
-      <legend>Household</legend>
-      <div class="form-row cols-2">
-        <div class="form-field">
-          <label for="householdSize">Household size</label>
-          <select id="householdSize" name="householdSize" required>
-            {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
-              <option value={n} selected={n === 3}>{n} {n === 1 ? 'person' : 'people'}</option>
-            ))}
-          </select>
-        </div>
-        <div class="form-field">
-          <label for="bedrooms">Bedrooms on voucher</label>
-          <select id="bedrooms" name="bedrooms" required>
-            <option value="0">Studio</option>
-            <option value="1">1 bedroom</option>
-            <option value="2" selected>2 bedrooms</option>
-            <option value="3">3 bedrooms</option>
-            <option value="4">4 bedrooms</option>
-          </select>
-        </div>
-      </div>
-      <div class="form-row cols-2">
-        <div class="form-field">
-          <label for="annualGrossIncome">Annual gross household income ($)</label>
-          <input id="annualGrossIncome" name="annualGrossIncome" type="number" min="0" step="100" placeholder="28000" required />
-        </div>
-        <div class="form-field">
-          <label for="annualDeductions">Annual income deductions ($) <small>(optional)</small></label>
-          <input id="annualDeductions" name="annualDeductions" type="number" min="0" step="100" placeholder="0" />
-          <small>Elderly/disabled, childcare, medical — per PHA rules.</small>
-        </div>
-      </div>
-      <div class="form-field">
-        <label for="monthlyRent">Monthly rent you're considering ($) <small>(optional)</small></label>
-        <input id="monthlyRent" name="monthlyRent" type="number" min="0" step="50" placeholder="1400" />
-        <small>Leave blank for maximum possible subsidy before you pick a unit.</small>
-      </div>
-    </fieldset>
+      <form id="calc-form" class="calc-form-body" novalidate>
+        <fieldset>
+          <legend>{t.stepLocation}</legend>
+          <div class="form-row cols-3">
+            <div class="form-field">
+              <label for="zip">{t.zip}</label>
+              <input id="zip" name="zip" inputmode="numeric" pattern="\d{5}" maxlength="5" placeholder="80204" required />
+              <small>{t.zipHint}</small>
+            </div>
+            <div class="form-field">
+              <label for="city">{t.city}</label>
+              <select id="city" name="city" disabled required>
+                <option value="">{t.cityPlaceholder}</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label for="county">{t.county}</label>
+              <select id="county" name="county" disabled required>
+                <option value="">{t.cityPlaceholder}</option>
+              </select>
+            </div>
+          </div>
+          <p id="location-status" class="calc-status hidden" role="status"></p>
+        </fieldset>
 
-    <button type="submit" class="btn btn-primary" id="calc-submit">Calculate my estimate</button>
-  </form>
+        <fieldset>
+          <legend>{t.householdLegend}</legend>
+          <div class="form-row cols-2">
+            <div class="form-field">
+              <label for="householdSize">{t.householdSize}</label>
+              <select id="householdSize" name="householdSize" required>
+                {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
+                  <option value={n} selected={n === 3}>
+                    {n} {n === 1 ? t.person : t.people}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div class="form-field">
+              <label for="bedrooms">{t.bedrooms}</label>
+              <select id="bedrooms" name="bedrooms" required>
+                <option value="0">{t.studio}</option>
+                <option value="1">1 {t.br}</option>
+                <option value="2" selected>2 {t.br}</option>
+                <option value="3">3 {t.br}</option>
+                <option value="4">4 {t.br}</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row cols-2">
+            <div class="form-field">
+              <label for="annualGrossIncome">{t.annualIncome} ($)</label>
+              <input id="annualGrossIncome" name="annualGrossIncome" type="number" min="0" step="100" placeholder="28000" required />
+            </div>
+            <div class="form-field">
+              <label for="annualDeductions">{t.deductions} ($) <small>({t.optional})</small></label>
+              <input id="annualDeductions" name="annualDeductions" type="number" min="0" step="100" placeholder="0" />
+              <small>{t.deductionsHint}</small>
+            </div>
+          </div>
+          <div class="form-field">
+            <label for="monthlyRent">{t.monthlyRent} ($) <small>({t.optional})</small></label>
+            <input id="monthlyRent" name="monthlyRent" type="number" min="0" step="50" placeholder="1400" />
+            <small>{t.monthlyRentHint}</small>
+          </div>
+        </fieldset>
 
-  <div id="calc-results" class="results-panel hidden" aria-live="polite"></div>
+        <button type="submit" class="btn btn-primary calc-submit" id="calc-submit">{t.submit}</button>
+      </form>
+    </div>
+
+    <aside class="calc-results-sidebar" aria-live="polite">
+      <h3>{t.resultsTitle}</h3>
+      <div id="calc-results-placeholder">
+        <div class="placeholder-icon" aria-hidden="true">📊</div>
+        <p class="placeholder">{t.resultsPlaceholder}</p>
+      </div>
+      <div id="calc-results" class="hidden"></div>
+    </aside>
+  </div>
 </section>
 
-<script>
+<script define:vars={{ t, locale, lang }}>
   import { trackEvent } from '../lib/analytics';
 
-  const form = document.getElementById('calc-form') as HTMLFormElement;
-  const zipInput = document.getElementById('zip') as HTMLInputElement;
-  const citySelect = document.getElementById('city') as HTMLSelectElement;
-  const countySelect = document.getElementById('county') as HTMLSelectElement;
-  const statusEl = document.getElementById('location-status') as HTMLParagraphElement;
-  const resultsEl = document.getElementById('calc-results') as HTMLDivElement;
-  const submitBtn = document.getElementById('calc-submit') as HTMLButtonElement;
+  const form = document.getElementById('calc-form');
+  const zipInput = document.getElementById('zip');
+  const citySelect = document.getElementById('city');
+  const countySelect = document.getElementById('county');
+  const statusEl = document.getElementById('location-status');
+  const resultsEl = document.getElementById('calc-results');
+  const placeholderEl = document.getElementById('calc-results-placeholder');
+  const submitBtn = document.getElementById('calc-submit');
 
-  type ZipLookup = {
-    zip: string;
-    places: { city: string; state: string; stateAbbr: string }[];
-    counties: { name: string; entityId: string; fullFips: string }[];
+  const labels = {
+    eligible: t.eligible,
+    possibly_eligible: t.possiblyEligible,
+    not_eligible: t.notEligible,
   };
 
-  let lookupCache: ZipLookup | null = null;
-  let zipDebounce: ReturnType<typeof setTimeout> | undefined;
+  let lookupCache = null;
+  let zipDebounce;
   let lastTrackedZip = '';
 
-  trackEvent('calculator_view', { page_path: window.location.pathname });
+  trackEvent('calculator_view', { page_path: window.location.pathname, lang });
 
-  function formatMoney(n: number) {
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n);
+  function formatMoney(n) {
+    return new Intl.NumberFormat(locale, { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n);
   }
 
-  function setStatus(msg: string, visible = true) {
+  function setStatus(msg, visible = true, isError = false) {
     statusEl.textContent = msg;
     statusEl.classList.toggle('hidden', !visible);
+    statusEl.classList.toggle('is-error', isError);
   }
 
-  function fillLocation(data: ZipLookup) {
+  function showResults() {
+    placeholderEl.classList.add('hidden');
+    resultsEl.classList.remove('hidden');
+  }
+
+  function fillLocation(data) {
     lookupCache = data;
     citySelect.innerHTML = '';
     countySelect.innerHTML = '';
@@ -132,7 +178,7 @@
 
     citySelect.disabled = false;
     countySelect.disabled = false;
-    setStatus(`Found ${data.places.length} place(s) and ${data.counties.length} county option(s) for ZIP ${data.zip}. Confirm below.`);
+    setStatus(t.locationFound(data.places.length, data.counties.length, data.zip));
 
     if (data.zip !== lastTrackedZip) {
       lastTrackedZip = data.zip;
@@ -145,14 +191,14 @@
     }
   }
 
-  async function lookupZipCode(zip: string) {
-    setStatus('Looking up ZIP…');
+  async function lookupZipCode(zip) {
+    setStatus(t.lookingUp);
     trackEvent('zip_lookup_started', { zip });
     const res = await fetch(`/api/location/zip?zip=${encodeURIComponent(zip)}`);
     const data = await res.json();
     if (!res.ok) {
       trackEvent('zip_lookup_error', { zip, error_message: data.error ?? 'failed' });
-      throw new Error(data.error ?? 'ZIP lookup failed');
+      throw new Error(data.error ?? t.noZip);
     }
     fillLocation(data);
   }
@@ -168,35 +214,33 @@
       return;
     }
     clearTimeout(zipDebounce);
-    zipDebounce = setTimeout(
-      () => lookupZipCode(zip).catch((e) => setStatus(e instanceof Error ? e.message : 'ZIP lookup failed')),
-      400,
-    );
+    zipDebounce = setTimeout(() => lookupZipCode(zip).catch((e) => setStatus(e.message, true, true)), 400);
   });
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     if (!lookupCache) {
-      setStatus('Enter a valid ZIP and wait for city/county to load.');
+      setStatus(t.zipFirst, true, true);
       trackEvent('calculate_blocked', { reason: 'no_zip_lookup' });
       return;
     }
 
     const countyOpt = countySelect.selectedOptions[0];
     const cityOpt = citySelect.selectedOptions[0];
-    const monthlyRentInput = document.getElementById('monthlyRent') as HTMLInputElement;
+    const monthlyRentInput = document.getElementById('monthlyRent');
 
     trackEvent('calculate_click', {
       zip: lookupCache.zip,
       state: cityOpt?.dataset.stateAbbr ?? '',
-      household_size: Number((document.getElementById('householdSize') as HTMLSelectElement).value),
-      bedrooms: Number((document.getElementById('bedrooms') as HTMLSelectElement).value),
+      household_size: Number(document.getElementById('householdSize').value),
+      bedrooms: Number(document.getElementById('bedrooms').value),
       has_rent: Boolean(monthlyRentInput?.value),
     });
 
     submitBtn.disabled = true;
     form.classList.add('loading');
     resultsEl.classList.add('hidden');
+    placeholderEl.classList.remove('hidden');
 
     try {
       const res = await fetch('/api/calculate', {
@@ -208,13 +252,11 @@
           county: countyOpt?.dataset.countyName,
           stateAbbr: cityOpt?.dataset.stateAbbr,
           entityId: countyOpt?.value,
-          annualGrossIncome: Number((document.getElementById('annualGrossIncome') as HTMLInputElement).value),
-          annualDeductions: Number((document.getElementById('annualDeductions') as HTMLInputElement).value) || 0,
-          householdSize: Number((document.getElementById('householdSize') as HTMLSelectElement).value),
-          bedrooms: Number((document.getElementById('bedrooms') as HTMLSelectElement).value),
-          monthlyRent: (document.getElementById('monthlyRent') as HTMLInputElement).value
-            ? Number((document.getElementById('monthlyRent') as HTMLInputElement).value)
-            : undefined,
+          annualGrossIncome: Number(document.getElementById('annualGrossIncome').value),
+          annualDeductions: Number(document.getElementById('annualDeductions').value) || 0,
+          householdSize: Number(document.getElementById('householdSize').value),
+          bedrooms: Number(document.getElementById('bedrooms').value),
+          monthlyRent: monthlyRentInput?.value ? Number(monthlyRentInput.value) : undefined,
         }),
       });
 
@@ -223,29 +265,30 @@
 
       const { eligibility, subsidy, incomeLimits, fmr, disclaimer } = data;
       const statusClass = eligibility.status;
+      const headline = labels[statusClass] ?? eligibility.label;
 
       let rentNote = '';
       if (subsidy.actualHap != null) {
-        rentNote = `<p>With rent entered: estimated voucher payment <strong>${formatMoney(subsidy.actualHap)}/mo</strong>.</p>`;
+        rentNote = `<p class="rent-note">${t.withRent(formatMoney(subsidy.actualHap))}</p>`;
         if (subsidy.rentAboveStandard) {
-          rentNote += `<p class="warn">Rent is ${formatMoney(subsidy.rentAboveStandard)} above the payment standard — you pay that extra.</p>`;
+          rentNote += `<p class="warn">${t.rentAbove(formatMoney(subsidy.rentAboveStandard))}</p>`;
         }
       }
 
       resultsEl.dataset.status = statusClass;
       resultsEl.innerHTML = `
-        <h3>${eligibility.label}</h3>
-        <p><strong>${incomeLimits.areaName}</strong> (HUD ${incomeLimits.year}) — very low income limit for your household: <strong>${formatMoney(eligibility.veryLowLimit)}/yr</strong></p>
+        <p class="result-headline">${headline}</p>
+        <p class="result-area"><strong>${incomeLimits.areaName}</strong> (HUD ${incomeLimits.year}) — ${t.veryLowLimit}: <strong>${formatMoney(eligibility.veryLowLimit)}${t.perYear}</strong></p>
         <div class="stat-grid">
-          <div class="stat"><p class="label">Your share (TTP)</p><p class="value">${formatMoney(subsidy.totalTenantPayment)}/mo</p></div>
-          <div class="stat"><p class="label">Payment standard (${fmr.bedrooms} BR)</p><p class="value">${formatMoney(subsidy.paymentStandard)}/mo</p></div>
-          <div class="stat"><p class="label">Max voucher help</p><p class="value">${formatMoney(subsidy.maxMonthlySubsidy)}/mo</p></div>
-          <div class="stat"><p class="label">FMR basis</p><p class="value">${formatMoney(fmr.fmrAmount)}/mo</p></div>
+          <div class="stat"><p class="label">${t.yourShare}</p><p class="value">${formatMoney(subsidy.totalTenantPayment)}${t.perMonth}</p></div>
+          <div class="stat"><p class="label">${t.paymentStandard} (${fmr.bedrooms} BR)</p><p class="value">${formatMoney(subsidy.paymentStandard)}${t.perMonth}</p></div>
+          <div class="stat"><p class="label">${t.maxHelp}</p><p class="value">${formatMoney(subsidy.maxMonthlySubsidy)}${t.perMonth}</p></div>
+          <div class="stat"><p class="label">${t.fmrBasis}</p><p class="value">${formatMoney(fmr.fmrAmount)}${t.perMonth}</p></div>
         </div>
         ${rentNote}
         <p><small>${disclaimer}</small></p>
       `;
-      resultsEl.classList.remove('hidden');
+      showResults();
 
       trackEvent('calculate_success', {
         zip: lookupCache.zip,
@@ -256,13 +299,10 @@
       });
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Something went wrong.';
-      trackEvent('calculate_error', {
-        zip: lookupCache?.zip ?? '',
-        error_message: message.slice(0, 120),
-      });
+      trackEvent('calculate_error', { zip: lookupCache?.zip ?? '', error_message: message.slice(0, 120) });
       resultsEl.dataset.status = 'error';
-      resultsEl.innerHTML = `<p>${message}</p>`;
-      resultsEl.classList.remove('hidden');
+      resultsEl.innerHTML = `<p class="result-headline">${message}</p>`;
+      showResults();
     } finally {
       submitBtn.disabled = false;
       form.classList.remove('loading');
@@ -271,19 +311,12 @@
 </script>
 
 <style>
-  .calculator h2 {
-    margin-top: 0;
-  }
-  fieldset {
-    border: none;
-    padding: 0;
-    margin: 0 0 1.25rem;
-  }
-  legend {
-    font-weight: 700;
-    margin-bottom: 0.75rem;
+  .rent-note {
+    margin: 0.75rem 0 0;
+    font-size: 0.92rem;
   }
   .warn {
     color: var(--color-warning);
+    font-size: 0.9rem;
   }
 </style>

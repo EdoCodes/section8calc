@@ -18,24 +18,30 @@ const jsonLd = {
   title="Section 8 Calculator by ZIP — Eligibility & Rent Estimate"
   description="Use our Section 8 calculator: enter ZIP to confirm city and county, then estimate voucher eligibility, income limits, and monthly housing assistance."
   canonicalPath="/calculator/"
+  lang="en"
 >
   <Fragment slot="head">
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
   </Fragment>
 
-  <section class="hero">
+  <section class="calc-page-hero">
     <div class="container">
-      <h1>Section 8 calculator</h1>
+      <h1>Your Section 8 estimate in three steps</h1>
       <p>
-        Thousands of renters search for Section 8 housing every day. This tool turns HUD data into a clear estimate —
-        after you confirm your location from ZIP.
+        ZIP-first lookup, HUD income limits, and Fair Market Rent — the same building blocks housing authorities use for voucher math.
       </p>
+      <div class="badge-row">
+        <span class="calc-hero-badge">HUD income limits</span>
+        <span class="calc-hero-badge">Fair Market Rent</span>
+        <span class="calc-hero-badge">Free estimate</span>
+      </div>
     </div>
   </section>
 
-  <section class="container" style="padding-bottom: 3rem;">
-    <Section8Calculator />
-    <aside class="card" style="margin-top: 1.5rem;">
+  <Section8Calculator lang="en" />
+
+  <section class="container calc-how-it-works">
+    <div class="card">
       <h2>How this estimate works</h2>
       <ol>
         <li><strong>ZIP</strong> resolves your city and county (Census/FCC geography).</li>
@@ -48,6 +54,6 @@ const jsonLd = {
         Read more in our <a href="/guides/how-section-8-housing-works/">how Section 8 works</a> guide or
         <a href="/guides/section-8-income-limits-explained/">income limits explained</a>.
       </p>
-    </aside>
+    </div>
   </section>
 </BaseLayout>

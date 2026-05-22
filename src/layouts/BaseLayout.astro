@@ -1,13 +1,22 @@
 ---
 import '../styles/global.css';
 import GoogleAnalytics from '../components/GoogleAnalytics.astro';
+import LanguageSwitcher from '../components/LanguageSwitcher.astro';
 import SiteAnalytics from '../components/SiteAnalytics.astro';
+import {
+  alternateLangPath,
+  calcPath,
+  getSiteStrings,
+  homePath,
+  type Lang,
+} from '../lib/i18n';
 
 interface Props {
   title: string;
   description: string;
   canonicalPath?: string;
   ogType?: 'website' | 'article';
+  lang?: Lang;
 }
 
 const {
@@ -15,20 +24,31 @@ const {
   description,
   canonicalPath = Astro.url.pathname,
   ogType = 'website',
+  lang = 'en',
 } = Astro.props;
 
+const s = getSiteStrings(lang);
 const site = Astro.site ?? new URL('https://section8calculator.com');
 const canonical = new URL(canonicalPath, site).href;
-const fullTitle = title.includes('Section 8') ? title : `${title} | Section 8 Calculator`;
+const fullTitle = title.includes('Section 8') || title.includes('Section8') || title.includes('Calculadora')
+  ? title
+  : `${title} | ${s.siteName}`;
+
+const altPath = alternateLangPath(canonicalPath, lang);
+const altCanonical = new URL(altPath, site).href;
+const enCanonical = lang === 'en' ? canonical : altCanonical;
+const esCanonical = lang === 'es' ? canonical : altCanonical;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={lang === 'es' ? 'es' : 'en'}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
+    <link rel="alternate" hreflang="en" href={enCanonical} />
+    <link rel="alternate" hreflang="es" href={esCanonical} />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content={ogType} />
@@ -42,12 +62,23 @@ const fullTitle = title.includes('Section 8') ? title : `${title} | Section 8 Ca
   <body>
     <header class="site-header">
       <div class="container inner">
-        <a class="logo" href="/">Section <span>8</span> Calculator</a>
+        <a class="logo" href={homePath(lang)}>
+          {lang === 'es' ? (
+            <>Calculadora <span>Section 8</span></>
+          ) : (
+            <>Section <span>8</span> Calculator</>
+          )}
+        </a>
         <nav class="nav" aria-label="Main">
-          <a href="/calculator/" aria-current={Astro.url.pathname.startsWith('/calculator') ? 'page' : undefined}>Calculator</a>
-          <a href="/section-8/" aria-current={Astro.url.pathname.startsWith('/section-8') ? 'page' : undefined}>By city</a>
-          <a href="/guides/" aria-current={Astro.url.pathname.startsWith('/guides') ? 'page' : undefined}>Guides</a>
-          <a class="btn btn-primary" href="/calculator/" data-analytics="cta_calculator_nav">Check eligibility</a>
+          <a href={calcPath(lang)} aria-current={Astro.url.pathname.includes('calculat') ? 'page' : undefined}>{s.navCalculator}</a>
+          {lang === 'en' && (
+            <>
+              <a href="/section-8/" aria-current={Astro.url.pathname.startsWith('/section-8') ? 'page' : undefined}>{s.navCities}</a>
+              <a href="/guides/" aria-current={Astro.url.pathname.startsWith('/guides') ? 'page' : undefined}>{s.navGuides}</a>
+            </>
+          )}
+          <LanguageSwitcher lang={lang} />
+          <a class="btn btn-primary" href={calcPath(lang)} data-analytics="cta_calculator_nav">{s.navCta}</a>
         </nav>
       </div>
     </header>
@@ -59,12 +90,15 @@ const fullTitle = title.includes('Section 8') ? title : `${title} | Section 8 Ca
     <footer class="site-footer">
       <div class="container">
         <p>
-          <strong>Disclaimer:</strong> This site provides educational estimates based on HUD income limits and Fair Market Rents.
-          It is not affiliated with HUD or your local Public Housing Authority. Always apply through your PHA for official determinations.
+          <strong>{lang === 'es' ? 'Aviso:' : 'Disclaimer:'}</strong> {s.footerDisclaimer}
         </p>
         <p>
-          <a href="/calculator/">Section 8 calculator</a> ·
-          <a href="/guides/">Housing guides</a>
+          <a href={calcPath(lang)}>{s.calcLink}</a>
+          {lang === 'en' && (
+            <>
+              {' '}· <a href="/guides/">{s.guidesLink}</a>
+            </>
+          )}
         </p>
       </div>
     </footer>
