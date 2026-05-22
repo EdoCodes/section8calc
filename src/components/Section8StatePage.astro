@@ -1,0 +1,42 @@
+---
+import CityDirectory from './CityDirectory.astro';
+import type { Lang } from '../lib/i18n';
+import { calcPath, citiesPath } from '../lib/i18n';
+import type { PlaceRecord, StateMeta } from '../lib/places';
+
+interface Props {
+  state: StateMeta;
+  places: PlaceRecord[];
+  lang?: Lang;
+}
+
+const { state, places, lang = 'en' } = Astro.props;
+const allStates = lang === 'es' ? '← Todos los estados' : '← All states';
+const h1 =
+  lang === 'es'
+    ? `Programas Section 8 y vouchers en ${state.name}`
+    : `Section 8 programs & vouchers in ${state.name}`;
+const lead =
+  lang === 'es'
+    ? `Cada página de ciudad incluye información local, guías Section 8 y enlace a nuestra calculadora por ZIP. Explore ${state.placeCount.toLocaleString('es-US')} lugares abajo.`
+    : `Each city page includes local program overview, Section 8 guides, and a link to our ZIP calculator. Browse ${state.placeCount.toLocaleString('en-US')} places below.`;
+const calcCta = lang === 'es' ? 'Calculadora Section 8' : 'Section 8 calculator';
+const citiesTitle =
+  lang === 'es' ? `Ciudades y lugares en ${state.name}` : `Cities & places in ${state.name}`;
+---
+
+<section class="page-hero">
+  <div class="container">
+    <p><a href={citiesPath(lang)}>{allStates}</a></p>
+    <h1 class="font-display">{h1}</h1>
+    <p>{lead}</p>
+    <p style="margin-top: 1.25rem;">
+      <a class="btn btn-primary" href={calcPath(lang)}>{calcCta}</a>
+    </p>
+  </div>
+</section>
+
+<section class="container" style="padding-bottom: 4rem;">
+  <h2 class="home-section-title">{citiesTitle}</h2>
+  <CityDirectory places={places} stateSlug={state.slug} lang={lang} />
+</section>

@@ -6,7 +6,9 @@ import SiteAnalytics from '../components/SiteAnalytics.astro';
 import {
   alternateLangPath,
   calcPath,
+  citiesPath,
   getSiteStrings,
+  guidesPath,
   homePath,
   type Lang,
 } from '../lib/i18n';
@@ -38,6 +40,7 @@ const altPath = alternateLangPath(canonicalPath, lang);
 const altCanonical = new URL(altPath, site).href;
 const enCanonical = lang === 'en' ? canonical : altCanonical;
 const esCanonical = lang === 'es' ? canonical : altCanonical;
+const logoMark = lang === 'es' ? 'S8' : 'S8';
 ---
 
 <!doctype html>
@@ -59,24 +62,20 @@ const esCanonical = lang === 'es' ? canonical : altCanonical;
     <GoogleAnalytics />
     <slot name="head" />
   </head>
-  <body>
-    <header class="site-header">
+  <body class="bg-mesh">
+    <header class="site-header site-header--glass">
       <div class="container inner">
-        <a class="logo" href={homePath(lang)}>
-          {lang === 'es' ? (
-            <>Calculadora <span>Section 8</span></>
-          ) : (
-            <>Section <span>8</span> Calculator</>
-          )}
+        <a class="site-logo" href={homePath(lang)}>
+          <span class="site-logo__mark" aria-hidden="true">{logoMark}</span>
+          <span class="site-logo__text">
+            <span class="site-logo__name">{s.siteName}</span>
+            <span class="site-logo__tagline">{s.siteTagline}</span>
+          </span>
         </a>
-        <nav class="nav" aria-label="Main">
+        <nav class="site-nav" aria-label="Main">
           <a href={calcPath(lang)} aria-current={Astro.url.pathname.includes('calculat') ? 'page' : undefined}>{s.navCalculator}</a>
-          {lang === 'en' && (
-            <>
-              <a href="/section-8/" aria-current={Astro.url.pathname.startsWith('/section-8') ? 'page' : undefined}>{s.navCities}</a>
-              <a href="/guides/" aria-current={Astro.url.pathname.startsWith('/guides') ? 'page' : undefined}>{s.navGuides}</a>
-            </>
-          )}
+          <a href={citiesPath(lang)} aria-current={Astro.url.pathname.includes('section-8') ? 'page' : undefined}>{s.navCities}</a>
+          <a href={guidesPath(lang)} aria-current={Astro.url.pathname.includes('guides') || Astro.url.pathname.includes('guias') ? 'page' : undefined}>{s.navGuides}</a>
           <LanguageSwitcher lang={lang} />
           <a class="btn btn-primary" href={calcPath(lang)} data-analytics="cta_calculator_nav">{s.navCta}</a>
         </nav>
@@ -94,11 +93,8 @@ const esCanonical = lang === 'es' ? canonical : altCanonical;
         </p>
         <p>
           <a href={calcPath(lang)}>{s.calcLink}</a>
-          {lang === 'en' && (
-            <>
-              {' '}· <a href="/guides/">{s.guidesLink}</a>
-            </>
-          )}
+          {' '}· <a href={citiesPath(lang)}>{s.citiesLink}</a>
+          {' '}· <a href={guidesPath(lang)}>{s.guidesLink}</a>
         </p>
       </div>
     </footer>

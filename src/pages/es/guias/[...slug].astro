@@ -1,0 +1,50 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { getCollection, render } from 'astro:content';
+import { calcPath, guideSlugPath, guidesPath } from '../../../lib/i18n';
+
+export async function getStaticPaths() {
+  const guides = await getCollection('guides-es', ({ data }) => !data.draft);
+  return guides.map((guide) => ({
+    params: { slug: guide.id },
+    props: { guide },
+  }));
+}
+
+const { guide } = Astro.props;
+const { Content } = await render(guide);
+const { title, description, pubDate, updatedDate, tags } = guide.data;
+
+const articleLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: title,
+  description,
+  datePublished: pubDate.toISOString(),
+  dateModified: (updatedDate ?? pubDate).toISOString(),
+  inLanguage: 'es',
+};
+---
+
+<BaseLayout title={title} description={description} ogType="article" canonicalPath={guideSlugPath('es', guide.id)} lang="es">
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(articleLd)} />
+  </Fragment>
+
+  <article class="container prose" style="padding: 2rem 0 4rem;">
+    <p>
+      <a href={guidesPath('es')}>← Todas las guías</a>
+    </p>
+    {tags.map((tag) => <span class="tag">{tag}</span>)}
+    <h1 class="font-display">{title}</h1>
+    <p style="color: var(--color-ink-muted);">
+      Publicado {pubDate.toLocaleDateString('es-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+    </p>
+    <Content />
+    <hr style="margin: 2.5rem 0; border: none; border-top: 1px solid var(--color-border);" />
+    <p>
+      <strong>Siguiente paso:</strong>{' '}
+      <a href={calcPath('es')}>Use la calculadora Section 8</a> — ingrese su ZIP y vea límites de ingreso y subvención estimada.
+    </p>
+  </article>
+</BaseLayout>

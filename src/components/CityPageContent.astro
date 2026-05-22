@@ -1,35 +1,43 @@
 ---
 import { getCollection } from 'astro:content';
+import type { Lang } from '../lib/i18n';
+import { guideSlugPath, statePath } from '../lib/i18n';
 import type { PlaceRecord, StateMeta } from '../lib/places';
-import { getCityFaq, getCityPageCopy } from '../lib/city-content';
+import { getCityFaq, getCityPageCopy, getCityUiPaths } from '../lib/city-content';
 
 interface Props {
   place: PlaceRecord;
   state: StateMeta;
+  lang?: Lang;
 }
 
-const { place, state } = Astro.props;
+const { place, state, lang = 'en' } = Astro.props;
 
-const copy = getCityPageCopy(place, state);
-const faq = getCityFaq(place, state);
+const copy = getCityPageCopy(place, state, lang);
+const faq = getCityFaq(place, state, lang);
+const paths = getCityUiPaths(lang);
 
-const allGuides = (await getCollection('guides', ({ data }) => !data.draft)).sort(
-  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
-);
-
+const allGuides =
+  lang === 'es'
+    ? (await getCollection('guides-es', ({ data }) => !data.draft)).sort(
+        (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+      )
+    : (await getCollection('guides', ({ data }) => !data.draft)).sort(
+        (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+      );
 ---
 
 <article class="city-page container">
   <nav aria-label="Breadcrumb" class="breadcrumb">
-    <a href="/section-8/">All states</a>
+    <a href={paths.cities}>{copy.breadcrumbAll}</a>
     <span aria-hidden="true"> / </span>
-    <a href={`/section-8/${state.slug}/`}>{state.name}</a>
+    <a href={statePath(lang, state.slug)}>{state.name}</a>
     <span aria-hidden="true"> / </span>
     <span>{copy.city}</span>
   </nav>
 
   <header class="city-page__hero">
-    <h1>Section 8 programs &amp; vouchers in {copy.city}, {copy.stateAbbr}</h1>
+    <h1 class="font-display">{copy.h1}</h1>
     <p class="meta">
       {copy.countyPhrase} · {state.name}
     </p>
@@ -37,39 +45,36 @@ const allGuides = (await getCollection('guides', ({ data }) => !data.draft)).sor
   </header>
 
   <section class="card city-page__cta">
-    <h2>Estimate voucher help in {copy.city}</h2>
+    <h2>{copy.ctaTitle}</h2>
     <p>{copy.calculatorPitch}</p>
     <a
       class="btn btn-primary"
-      href="/calculator/"
+      href={paths.calc}
       data-analytics="cta_calculator_city"
       data-analytics-city={copy.city}
       data-analytics-state={copy.stateAbbr}
     >
-      Open Section 8 calculator
+      {copy.ctaButton}
     </a>
   </section>
 
   <section class="city-page__section">
-    <h2>Housing Choice Voucher program</h2>
+    <h2>{copy.voucherSection}</h2>
     <p>{copy.voucherExplain}</p>
     <p>{copy.waitingListNote}</p>
     <ul>
-      <li><strong>Project-based Section 8</strong> — subsidy stays with specific buildings (different application path).</li>
-      <li><strong>Tenant-based vouchers (HCV)</strong> — you find a unit; the voucher moves with you in many cases after initial lease-up.</li>
-      <li><strong>Local preferences</strong> — veterans, elderly, disabled, or working families may get priority on some lists.</li>
+      <li><strong>{lang === 'es' ? 'Section 8 basado en proyecto' : 'Project-based Section 8'}</strong> — {copy.projectBased}</li>
+      <li><strong>{lang === 'es' ? 'Vouchers HCV' : 'Tenant-based vouchers (HCV)'}</strong> — {copy.tenantBased}</li>
+      <li><strong>{lang === 'es' ? 'Preferencias locales' : 'Local preferences'}</strong> — {copy.localPrefs}</li>
     </ul>
   </section>
 
   <section class="city-page__section">
-    <h2>Section 8 guides for {copy.city} renters</h2>
-    <p>
-      These guides explain vouchers, income limits, and rent math for households in {copy.city} and across
-      {copy.stateName}. Each links to our calculator so you can run numbers for your ZIP.
-    </p>
+    <h2>{copy.guidesSection}</h2>
+    <p>{copy.guidesLead}</p>
     <div class="guides-grid">
       {allGuides.map((guide) => (
-        <a class="guide-card" href={`/guides/${guide.id}/`}>
+        <a class="guide-card" href={guideSlugPath(lang, guide.id)}>
           {guide.data.tags[0] && <span class="tag">{guide.data.tags[0]}</span>}
           <h3>{guide.data.title}</h3>
           <p>{guide.data.description}</p>
@@ -77,26 +82,29 @@ const allGuides = (await getCollection('guides', ({ data }) => !data.draft)).sor
       ))}
     </div>
     <p class="city-page__more-guides">
-      <a href="/guides/" data-analytics="cta_guides_index_from_city">All Section 8 guides →</a>
+      <a href={paths.guides} data-analytics="cta_guides_index_from_city">{copy.allGuides}</a>
     </p>
   </section>
 
   <section class="city-page__section">
-    <h2>Apply near {copy.city}</h2>
+    <h2>{copy.applySection}</h2>
     <ol>
-      <li>Confirm income limits with the <a href="/calculator/" data-analytics="cta_calculator_city_inline">calculator</a>.</li>
       <li>
-        Find your PHA via the
-        <a href={copy.phaFinderUrl} rel="noopener noreferrer" target="_blank">HUD PHA contact directory</a>
-        (search by {copy.stateName} / {copy.countyPhrase}).
+        {lang === 'es' ? 'Confirme límites con la ' : 'Confirm income limits with the '}
+        <a href={paths.calc} data-analytics="cta_calculator_city_inline">{lang === 'es' ? 'calculadora' : 'calculator'}</a>.
       </li>
-      <li>Join the waiting list when the PHA opens applications — many lists close for years at a time.</li>
-      <li>When selected, find a rental at or below the payment standard and complete inspection.</li>
+      <li>
+        {lang === 'es' ? 'Busque su PHA en el ' : 'Find your PHA via the '}
+        <a href={copy.phaFinderUrl} rel="noopener noreferrer" target="_blank">{copy.phaDirectory}</a>
+        ({copy.stateName} / {copy.countyPhrase}).
+      </li>
+      <li>{copy.applySteps[2]}</li>
+      <li>{copy.applySteps[3]}</li>
     </ol>
   </section>
 
   <section class="city-page__section city-page__faq">
-    <h2>FAQ — Section 8 in {copy.city}</h2>
+    <h2>{copy.faqSection}</h2>
     {faq.map((item) => (
       <details class="faq-item">
         <summary>{item.question}</summary>
@@ -106,17 +114,17 @@ const allGuides = (await getCollection('guides', ({ data }) => !data.draft)).sor
   </section>
 
   <footer class="city-page__footer">
-    <a class="btn btn-secondary" href={`/section-8/${state.slug}/`}>
-      More cities in {copy.stateName}
+    <a class="btn btn-secondary" href={statePath(lang, state.slug)}>
+      {copy.moreCities}
     </a>
     <a
       class="btn btn-primary"
-      href="/calculator/"
+      href={paths.calc}
       data-analytics="cta_calculator_city_footer"
       data-analytics-city={copy.city}
       data-analytics-state={copy.stateAbbr}
     >
-      Calculate for {copy.city}
+      {copy.calcFooter}
     </a>
   </footer>
 </article>
@@ -152,7 +160,7 @@ const allGuides = (await getCollection('guides', ({ data }) => !data.draft)).sor
     border-radius: 8px;
     padding: 0.75rem 1rem;
     margin-bottom: 0.65rem;
-    background: var(--color-surface);
+    background: var(--color-surface-elevated);
   }
   .city-page__faq summary {
     font-weight: 600;
@@ -160,7 +168,7 @@ const allGuides = (await getCollection('guides', ({ data }) => !data.draft)).sor
   }
   .city-page__faq p {
     margin: 0.75rem 0 0;
-    color: var(--color-muted);
+    color: var(--color-ink-muted);
   }
   .city-page__footer {
     margin-top: 2.5rem;
@@ -170,13 +178,10 @@ const allGuides = (await getCollection('guides', ({ data }) => !data.draft)).sor
   }
   .breadcrumb {
     font-size: 0.9rem;
-    color: var(--color-muted);
+    color: var(--color-ink-muted);
     margin-bottom: 1rem;
   }
-  .breadcrumb a {
-    color: var(--color-primary);
-  }
   .meta {
-    color: var(--color-muted);
+    color: var(--color-ink-muted);
   }
 </style>

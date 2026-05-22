@@ -140,6 +140,12 @@ const locale = lang === 'es' ? 'es-US' : 'en-US';
 
   trackEvent('calculator_view', { page_path: window.location.pathname, lang });
 
+  const zipFromUrl = new URLSearchParams(window.location.search).get('zip')?.replace(/\D/g, '').slice(0, 5);
+  if (zipFromUrl && zipFromUrl.length === 5) {
+    zipInput.value = zipFromUrl;
+    lookupZipCode(zipFromUrl).catch((e) => setStatus(e.message, true, true));
+  }
+
   function formatMoney(n) {
     return new Intl.NumberFormat(locale, { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n);
   }

@@ -8,17 +8,13 @@ From PowerShell:
 cd c:\Users\domai\tintshoproject\section8
 ```
 
-If this is the first push, create a **new empty repository** on GitHub (no README/license — we already have files). Example name: `section8-calculator`.
-
-Then:
+Repository: **https://github.com/EdoCodes/section8calc**
 
 ```powershell
-git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPO.git
-git branch -M main
+cd c:\Users\domai\tintshoproject\section8
+git remote add origin https://github.com/EdoCodes/section8calc.git
 git push -u origin main
 ```
-
-Replace `YOUR_USERNAME` and `YOUR_REPO` with your GitHub details.
 
 ## 2. Connect Netlify
 

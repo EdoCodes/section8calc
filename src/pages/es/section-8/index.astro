@@ -1,0 +1,18 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import Section8Directory from '../../../components/Section8Directory.astro';
+import { placesMetaInfo } from '../../../lib/places';
+import { citiesPath, getSection8IndexStrings } from '../../../lib/i18n';
+
+const s = getSection8IndexStrings('es');
+const count = placesMetaInfo.totalPlaces.toLocaleString('es-US');
+---
+
+<BaseLayout
+  title={s.title}
+  description={s.description(count)}
+  canonicalPath={citiesPath('es')}
+  lang="es"
+>
+  <Section8Directory lang="es" />
+</BaseLayout>

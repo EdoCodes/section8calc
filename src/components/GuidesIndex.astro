@@ -1,0 +1,48 @@
+---
+import { getCollection } from 'astro:content';
+import type { Lang } from '../lib/i18n';
+import { calcPath, guideSlugPath, guidesPath } from '../lib/i18n';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const guides =
+  lang === 'es'
+    ? await getCollection('guides-es', ({ data }) => !data.draft)
+    : await getCollection('guides', ({ data }) => !data.draft);
+const sorted = guides.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+const locale = lang === 'es' ? 'es-US' : 'en-US';
+const h1 = lang === 'es' ? 'Guías Section 8' : 'Section 8 guides';
+const lead =
+  lang === 'es'
+    ? 'Artículos que responden lo que los inquilinos buscan cada día — enlazados a nuestra calculadora Section 8.'
+    : 'In-depth articles that answer what renters search for every day — linked to our Section 8 calculator.';
+const calcLabel = lang === 'es' ? 'calculadora Section 8' : 'Section 8 calculator';
+---
+
+<section class="page-hero">
+  <div class="container">
+    <h1 class="font-display">{h1}</h1>
+    <p>
+      {lead}
+      <a href={calcPath(lang)}>{calcLabel}</a>.
+    </p>
+  </div>
+</section>
+
+<section class="container" style="padding-bottom: 4rem;">
+  <div class="guides-grid">
+    {sorted.map((guide) => (
+      <a class="guide-card" href={guideSlugPath(lang, guide.id)}>
+        {guide.data.tags[0] && <span class="tag">{guide.data.tags[0]}</span>}
+        <h2>{guide.data.title}</h2>
+        <p>{guide.data.description}</p>
+        <p style="margin-top: 0.75rem; font-size: 0.85rem;">
+          {guide.data.pubDate.toLocaleDateString(locale, { year: 'numeric', month: 'long', day: 'numeric' })}
+        </p>
+      </a>
+    ))}
+  </div>
+</section>

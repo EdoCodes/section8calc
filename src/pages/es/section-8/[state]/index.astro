@@ -1,0 +1,22 @@
+---
+import BaseLayout from '../../../../layouts/BaseLayout.astro';
+import Section8StatePage from '../../../../components/Section8StatePage.astro';
+import { getPlacesForState, states } from '../../../../lib/places';
+import { statePath } from '../../../../lib/i18n';
+
+export function getStaticPaths() {
+  return states.map((state) => ({
+    params: { state: state.slug },
+    props: { state },
+  }));
+}
+
+const { state } = Astro.props;
+const places = getPlacesForState(state.abbr);
+const title = `Section 8 en ${state.name} — ${state.placeCount.toLocaleString()} ciudades`;
+const description = `Límites de ingreso Section 8 y estimaciones de voucher para ${state.placeCount.toLocaleString()} ciudades en ${state.name}.`;
+---
+
+<BaseLayout {title} {description} canonicalPath={statePath('es', state.slug)} lang="es">
+  <Section8StatePage {state} {places} lang="es" />
+</BaseLayout>

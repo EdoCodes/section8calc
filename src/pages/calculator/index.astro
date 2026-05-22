@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Section8Calculator from '../../components/Section8Calculator.astro';
+import { calcPath, guidesPath } from '../../lib/i18n';
 
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -17,32 +18,28 @@ const jsonLd = {
 <BaseLayout
   title="Section 8 Calculator by ZIP — Eligibility & Rent Estimate"
   description="Use our Section 8 calculator: enter ZIP to confirm city and county, then estimate voucher eligibility, income limits, and monthly housing assistance."
-  canonicalPath="/calculator/"
+  canonicalPath={calcPath('en')}
   lang="en"
 >
   <Fragment slot="head">
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
   </Fragment>
 
-  <section class="calc-page-hero">
+  <section class="calc-page-intro">
     <div class="container">
-      <h1>Your Section 8 estimate in three steps</h1>
+      <p class="calc-step-label">Step 1 of 3</p>
+      <h1 class="font-display">Federal-style Section 8 estimate</h1>
       <p>
         ZIP-first lookup, HUD income limits, and Fair Market Rent — the same building blocks housing authorities use for voucher math.
       </p>
-      <div class="badge-row">
-        <span class="calc-hero-badge">HUD income limits</span>
-        <span class="calc-hero-badge">Fair Market Rent</span>
-        <span class="calc-hero-badge">Free estimate</span>
-      </div>
     </div>
   </section>
 
   <Section8Calculator lang="en" />
 
-  <section class="container calc-how-it-works">
+  <section class="container calc-how-it-works" style="padding-bottom: 4rem;">
     <div class="card">
-      <h2>How this estimate works</h2>
+      <h2 class="home-section-title">How this estimate works</h2>
       <ol>
         <li><strong>ZIP</strong> resolves your city and county (Census/FCC geography).</li>
         <li><strong>HUD income limits</strong> determine very low / low income eligibility.</li>
@@ -51,9 +48,15 @@ const jsonLd = {
         <li><strong>Maximum subsidy</strong> = payment standard minus your tenant payment.</li>
       </ol>
       <p>
-        Read more in our <a href="/guides/how-section-8-housing-works/">how Section 8 works</a> guide or
-        <a href="/guides/section-8-income-limits-explained/">income limits explained</a>.
+        Read more in our <a href={`${guidesPath('en')}how-section-8-housing-works/`}>how Section 8 works</a> guide or
+        <a href={`${guidesPath('en')}section-8-income-limits-explained/`}>income limits explained</a>.
       </p>
     </div>
   </section>
 </BaseLayout>
+
+<style>
+  .calc-how-it-works {
+    margin-top: 2rem;
+  }
+</style>

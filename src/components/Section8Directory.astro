@@ -1,0 +1,62 @@
+---
+import { placesMetaInfo, states } from '../lib/places';
+import { calcPath, getSection8IndexStrings, statePath, type Lang } from '../lib/i18n';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const s = getSection8IndexStrings(lang);
+const sorted = [...states].sort((a, b) => a.name.localeCompare(b.name));
+const count = placesMetaInfo.totalPlaces.toLocaleString(lang === 'es' ? 'es-US' : 'en-US');
+---
+
+<section class="page-hero">
+  <div class="container">
+    <h1 class="font-display">{s.h1}</h1>
+    <p>{s.lead(count)}</p>
+    <p style="margin-top: 1.25rem;">
+      <a class="btn btn-primary" href={calcPath(lang)}>{s.cta}</a>
+    </p>
+  </div>
+</section>
+
+<section class="container" style="padding-bottom: 4rem;">
+  <h2 class="home-section-title">{s.browseTitle}</h2>
+  <ul class="state-grid">
+    {sorted.map((state) => (
+      <li>
+        <a href={statePath(lang, state.slug)}>
+          <strong>{state.name}</strong>
+          <span>{state.placeCount.toLocaleString(lang === 'es' ? 'es-US' : 'en-US')} {lang === 'es' ? 'lugares' : 'places'}</span>
+        </a>
+      </li>
+    ))}
+  </ul>
+</section>
+
+<style>
+  .state-grid {
+    list-style: none;
+    padding: 0;
+    margin: 1.5rem 0 0;
+    display: grid;
+    gap: 0.75rem;
+    grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+  }
+  .state-grid a {
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    background: var(--color-surface-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    text-decoration: none;
+    color: inherit;
+  }
+  .state-grid span {
+    font-size: 0.85rem;
+    color: var(--color-ink-muted);
+  }
+</style>

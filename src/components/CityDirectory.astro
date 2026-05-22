@@ -1,28 +1,37 @@
 ---
+import type { Lang } from '../lib/i18n';
+import { cityPath } from '../lib/i18n';
 import type { PlaceRecord } from '../lib/places';
 import { groupPlacesByLetter } from '../lib/places';
 
 interface Props {
   places: PlaceRecord[];
   stateSlug: string;
+  lang?: Lang;
 }
 
-const { places, stateSlug } = Astro.props;
+const { places, stateSlug, lang = 'en' } = Astro.props;
+const filterLabel = lang === 'es' ? 'Filtrar ciudades' : 'Filter cities';
+const filterPlaceholder = lang === 'es' ? 'Escriba para filtrar…' : 'Type to filter…';
+const countLabel =
+  lang === 'es'
+    ? `${places.length} ciudades y lugares indexados`
+    : `${places.length} cities & places indexed`;
 const byLetter = groupPlacesByLetter(places);
 const letters = [...byLetter.keys()];
 ---
 
 <div class="city-directory">
   <div class="city-directory__search">
-    <label for="city-filter">Filter cities</label>
+    <label for="city-filter">{filterLabel}</label>
     <input
       id="city-filter"
       type="search"
-      placeholder="Type to filter…"
+      placeholder={filterPlaceholder}
       autocomplete="off"
       aria-controls="city-directory-list"
     />
-    <p class="city-directory__count">{places.length} cities &amp; places indexed</p>
+    <p class="city-directory__count">{countLabel}</p>
   </div>
 
   <div id="city-directory-list" class="city-directory__list">
@@ -33,7 +42,7 @@ const letters = [...byLetter.keys()];
           <ul>
             {byLetter.get(letter)!.map((place) => (
               <li data-name={place.displayName.toLowerCase()}>
-                <a href={`/section-8/${stateSlug}/${place.slug}/`}>
+                <a href={cityPath(lang, stateSlug, place.slug)}>
                   {place.displayName}
                 </a>
                 {place.type === 'cdp' && <span class="cdp-badge">CDP</span>}
@@ -84,13 +93,13 @@ const letters = [...byLetter.keys()];
     font-size: 1rem;
   }
   .city-directory__count {
-    color: var(--color-muted);
+    color: var(--color-ink-muted);
     font-size: 0.9rem;
     margin: 0.5rem 0 0;
   }
   .city-directory__section h3 {
     font-size: 1rem;
-    color: var(--color-primary-dark);
+    color: var(--color-accent);
     border-bottom: 1px solid var(--color-border);
     padding-bottom: 0.25rem;
     margin: 1.25rem 0 0.5rem;
@@ -108,7 +117,7 @@ const letters = [...byLetter.keys()];
   }
   .cdp-badge {
     font-size: 0.65rem;
-    color: var(--color-muted);
+    color: var(--color-ink-muted);
     margin-left: 0.25rem;
   }
 </style>
