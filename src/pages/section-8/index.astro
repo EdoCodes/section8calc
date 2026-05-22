@@ -1,0 +1,66 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { placesMetaInfo, states } from '../../lib/places';
+
+const sorted = [...states].sort((a, b) => a.name.localeCompare(b.name));
+---
+
+<BaseLayout
+  title="Section 8 Housing by State & City — Nationwide Directory"
+  description={`Find Section 8 housing guides and calculator estimates for ${placesMetaInfo.totalPlaces.toLocaleString()} cities and places across all 50 states.`}
+  canonicalPath="/section-8/"
+>
+  <section class="hero">
+    <div class="container">
+      <h1>Section 8 housing in every U.S. city</h1>
+      <p>
+        We index <strong>{placesMetaInfo.totalPlaces.toLocaleString()}</strong> cities, towns, and census places —
+        from Los Angeles to rural townships — each with a local page and link to our
+        <a href="/calculator/">ZIP-based calculator</a>.
+      </p>
+      <a class="btn btn-primary" href="/calculator/">Calculate for your ZIP</a>
+    </div>
+  </section>
+
+  <section class="container" style="padding-bottom: 4rem;">
+    <h2>Browse by state</h2>
+    <ul class="state-grid">
+      {sorted.map((state) => (
+        <li>
+          <a href={`/section-8/${state.slug}/`}>
+            <strong>{state.name}</strong>
+            <span>{state.placeCount.toLocaleString()} places</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </section>
+</BaseLayout>
+
+<style>
+  .state-grid {
+    list-style: none;
+    padding: 0;
+    margin: 1.5rem 0 0;
+    display: grid;
+    gap: 0.75rem;
+    grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+  }
+  .state-grid a {
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    text-decoration: none;
+    color: inherit;
+  }
+  .state-grid a:hover {
+    border-color: var(--color-primary);
+  }
+  .state-grid span {
+    font-size: 0.85rem;
+    color: var(--color-muted);
+  }
+</style>

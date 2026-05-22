@@ -1,0 +1,18 @@
+<script>
+  import { trackEvent } from '../lib/analytics';
+
+  document.addEventListener('click', (e) => {
+    const target = (e.target as Element).closest<HTMLElement>('[data-analytics]');
+    if (!target) return;
+
+    const params: Record<string, string> = {
+      from_page: window.location.pathname,
+      link_text: (target.textContent ?? '').trim().slice(0, 80),
+    };
+    if (target instanceof HTMLAnchorElement) params.link_url = target.pathname;
+    if (target.dataset.analyticsCity) params.city = target.dataset.analyticsCity;
+    if (target.dataset.analyticsState) params.state = target.dataset.analyticsState;
+
+    trackEvent(target.dataset.analytics ?? 'link_click', params);
+  });
+</script>

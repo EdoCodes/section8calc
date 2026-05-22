@@ -1,0 +1,22 @@
+---
+const gaId = import.meta.env.PUBLIC_GA_MEASUREMENT_ID;
+const debugMode = import.meta.env.PUBLIC_GA_DEBUG === 'true';
+---
+
+{gaId && (
+  <>
+    <script async src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}></script>
+    <script
+      is:inline
+      define:vars={{ gaId, debugMode }}
+    >
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      window.gtag = gtag;
+      gtag('js', new Date());
+      gtag('config', gaId, debugMode ? { debug_mode: true } : {});
+    </script>
+  </>
+)}

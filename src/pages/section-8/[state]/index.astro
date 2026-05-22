@@ -1,0 +1,36 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import CityDirectory from '../../../components/CityDirectory.astro';
+import { getPlacesForState, getStateBySlug, states } from '../../../lib/places';
+
+export function getStaticPaths() {
+  return states.map((state) => ({
+    params: { state: state.slug },
+    props: { state },
+  }));
+}
+
+const { state } = Astro.props;
+const places = getPlacesForState(state.abbr);
+const title = `Section 8 Housing in ${state.name} — ${state.placeCount.toLocaleString()} Cities`;
+const description = `Section 8 income limits and voucher estimates for ${state.placeCount.toLocaleString()} cities and places in ${state.name}. Find your city and use the calculator.`;
+---
+
+<BaseLayout {title} {description} canonicalPath={`/section-8/${state.slug}/`}>
+  <section class="hero">
+    <div class="container">
+      <p><a href="/section-8/">← All states</a></p>
+      <h1>Section 8 programs &amp; vouchers in {state.name}</h1>
+      <p>
+        Each city page includes local program overview, Section 8 guides, and a link to our
+        <a href="/calculator/">ZIP calculator</a>. Browse {state.placeCount.toLocaleString()} places below.
+      </p>
+      <a class="btn btn-primary" href="/calculator/">Section 8 calculator</a>
+    </div>
+  </section>
+
+  <section class="container" style="padding-bottom: 4rem;">
+    <h2>Cities &amp; places in {state.name}</h2>
+    <CityDirectory places={places} stateSlug={state.slug} />
+  </section>
+</BaseLayout>

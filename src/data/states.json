@@ -1,0 +1,314 @@
+[
+  {
+    "abbr": "AK",
+    "name": "Alaska",
+    "slug": "ak",
+    "placeCount": 355
+  },
+  {
+    "abbr": "AL",
+    "name": "Alabama",
+    "slug": "al",
+    "placeCount": 593
+  },
+  {
+    "abbr": "AR",
+    "name": "Arkansas",
+    "slug": "ar",
+    "placeCount": 626
+  },
+  {
+    "abbr": "AZ",
+    "name": "Arizona",
+    "slug": "az",
+    "placeCount": 467
+  },
+  {
+    "abbr": "CA",
+    "name": "California",
+    "slug": "ca",
+    "placeCount": 1611
+  },
+  {
+    "abbr": "CO",
+    "name": "Colorado",
+    "slug": "co",
+    "placeCount": 482
+  },
+  {
+    "abbr": "CT",
+    "name": "Connecticut",
+    "slug": "ct",
+    "placeCount": 215
+  },
+  {
+    "abbr": "DC",
+    "name": "District of Columbia",
+    "slug": "dc",
+    "placeCount": 1
+  },
+  {
+    "abbr": "DE",
+    "name": "Delaware",
+    "slug": "de",
+    "placeCount": 79
+  },
+  {
+    "abbr": "FL",
+    "name": "Florida",
+    "slug": "fl",
+    "placeCount": 955
+  },
+  {
+    "abbr": "GA",
+    "name": "Georgia",
+    "slug": "ga",
+    "placeCount": 675
+  },
+  {
+    "abbr": "HI",
+    "name": "Hawaii",
+    "slug": "hi",
+    "placeCount": 163
+  },
+  {
+    "abbr": "IA",
+    "name": "Iowa",
+    "slug": "ia",
+    "placeCount": 1028
+  },
+  {
+    "abbr": "ID",
+    "name": "Idaho",
+    "slug": "id",
+    "placeCount": 237
+  },
+  {
+    "abbr": "IL",
+    "name": "Illinois",
+    "slug": "il",
+    "placeCount": 1466
+  },
+  {
+    "abbr": "IN",
+    "name": "Indiana",
+    "slug": "in",
+    "placeCount": 696
+  },
+  {
+    "abbr": "KS",
+    "name": "Kansas",
+    "slug": "ks",
+    "placeCount": 740
+  },
+  {
+    "abbr": "KY",
+    "name": "Kentucky",
+    "slug": "ky",
+    "placeCount": 555
+  },
+  {
+    "abbr": "LA",
+    "name": "Louisiana",
+    "slug": "la",
+    "placeCount": 488
+  },
+  {
+    "abbr": "MA",
+    "name": "Massachusetts",
+    "slug": "ma",
+    "placeCount": 248
+  },
+  {
+    "abbr": "MD",
+    "name": "Maryland",
+    "slug": "md",
+    "placeCount": 536
+  },
+  {
+    "abbr": "ME",
+    "name": "Maine",
+    "slug": "me",
+    "placeCount": 155
+  },
+  {
+    "abbr": "MI",
+    "name": "Michigan",
+    "slug": "mi",
+    "placeCount": 745
+  },
+  {
+    "abbr": "MN",
+    "name": "Minnesota",
+    "slug": "mn",
+    "placeCount": 913
+  },
+  {
+    "abbr": "MO",
+    "name": "Missouri",
+    "slug": "mo",
+    "placeCount": 1082
+  },
+  {
+    "abbr": "MS",
+    "name": "Mississippi",
+    "slug": "ms",
+    "placeCount": 428
+  },
+  {
+    "abbr": "MT",
+    "name": "Montana",
+    "slug": "mt",
+    "placeCount": 497
+  },
+  {
+    "abbr": "NC",
+    "name": "North Carolina",
+    "slug": "nc",
+    "placeCount": 776
+  },
+  {
+    "abbr": "ND",
+    "name": "North Dakota",
+    "slug": "nd",
+    "placeCount": 406
+  },
+  {
+    "abbr": "NE",
+    "name": "Nebraska",
+    "slug": "ne",
+    "placeCount": 590
+  },
+  {
+    "abbr": "NH",
+    "name": "New Hampshire",
+    "slug": "nh",
+    "placeCount": 100
+  },
+  {
+    "abbr": "NJ",
+    "name": "New Jersey",
+    "slug": "nj",
+    "placeCount": 701
+  },
+  {
+    "abbr": "NM",
+    "name": "New Mexico",
+    "slug": "nm",
+    "placeCount": 527
+  },
+  {
+    "abbr": "NV",
+    "name": "Nevada",
+    "slug": "nv",
+    "placeCount": 133
+  },
+  {
+    "abbr": "NY",
+    "name": "New York",
+    "slug": "ny",
+    "placeCount": 1293
+  },
+  {
+    "abbr": "OH",
+    "name": "Ohio",
+    "slug": "oh",
+    "placeCount": 1265
+  },
+  {
+    "abbr": "OK",
+    "name": "Oklahoma",
+    "slug": "ok",
+    "placeCount": 843
+  },
+  {
+    "abbr": "OR",
+    "name": "Oregon",
+    "slug": "or",
+    "placeCount": 426
+  },
+  {
+    "abbr": "PA",
+    "name": "Pennsylvania",
+    "slug": "pa",
+    "placeCount": 1888
+  },
+  {
+    "abbr": "PR",
+    "name": "Puerto Rico",
+    "slug": "pr",
+    "placeCount": 292
+  },
+  {
+    "abbr": "RI",
+    "name": "Rhode Island",
+    "slug": "ri",
+    "placeCount": 36
+  },
+  {
+    "abbr": "SC",
+    "name": "South Carolina",
+    "slug": "sc",
+    "placeCount": 475
+  },
+  {
+    "abbr": "SD",
+    "name": "South Dakota",
+    "slug": "sd",
+    "placeCount": 486
+  },
+  {
+    "abbr": "TN",
+    "name": "Tennessee",
+    "slug": "tn",
+    "placeCount": 504
+  },
+  {
+    "abbr": "TX",
+    "name": "Texas",
+    "slug": "tx",
+    "placeCount": 1860
+  },
+  {
+    "abbr": "UT",
+    "name": "Utah",
+    "slug": "ut",
+    "placeCount": 333
+  },
+  {
+    "abbr": "VA",
+    "name": "Virginia",
+    "slug": "va",
+    "placeCount": 672
+  },
+  {
+    "abbr": "VT",
+    "name": "Vermont",
+    "slug": "vt",
+    "placeCount": 180
+  },
+  {
+    "abbr": "WA",
+    "name": "Washington",
+    "slug": "wa",
+    "placeCount": 639
+  },
+  {
+    "abbr": "WI",
+    "name": "Wisconsin",
+    "slug": "wi",
+    "placeCount": 804
+  },
+  {
+    "abbr": "WV",
+    "name": "West Virginia",
+    "slug": "wv",
+    "placeCount": 439
+  },
+  {
+    "abbr": "WY",
+    "name": "Wyoming",
+    "slug": "wy",
+    "placeCount": 205
+  }
+]

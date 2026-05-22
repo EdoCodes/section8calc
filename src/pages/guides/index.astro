@@ -1,0 +1,39 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const guides = (await getCollection('guides', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+---
+
+<BaseLayout
+  title="Section 8 Housing Guides & How-Tos"
+  description="Free guides on Section 8 vouchers, income limits, waiting lists, rent calculations, and how to apply for housing assistance."
+  canonicalPath="/guides/"
+>
+  <section class="hero">
+    <div class="container">
+      <h1>Section 8 guides</h1>
+      <p>
+        In-depth articles that answer what renters search for every day — linked to our
+        <a href="/calculator/">Section 8 calculator</a> so readers can run their own numbers.
+      </p>
+    </div>
+  </section>
+
+  <section class="container" style="padding-bottom: 4rem;">
+    <div class="guides-grid">
+      {guides.map((guide) => (
+        <a class="guide-card" href={`/guides/${guide.id}/`}>
+          {guide.data.tags[0] && <span class="tag">{guide.data.tags[0]}</span>}
+          <h2>{guide.data.title}</h2>
+          <p>{guide.data.description}</p>
+          <p style="margin-top: 0.75rem; font-size: 0.85rem;">
+            {guide.data.pubDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+          </p>
+        </a>
+      ))}
+    </div>
+  </section>
+</BaseLayout>

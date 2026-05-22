@@ -1,0 +1,182 @@
+---
+import { getCollection } from 'astro:content';
+import type { PlaceRecord, StateMeta } from '../lib/places';
+import { getCityFaq, getCityPageCopy } from '../lib/city-content';
+
+interface Props {
+  place: PlaceRecord;
+  state: StateMeta;
+}
+
+const { place, state } = Astro.props;
+
+const copy = getCityPageCopy(place, state);
+const faq = getCityFaq(place, state);
+
+const allGuides = (await getCollection('guides', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+
+---
+
+<article class="city-page container">
+  <nav aria-label="Breadcrumb" class="breadcrumb">
+    <a href="/section-8/">All states</a>
+    <span aria-hidden="true"> / </span>
+    <a href={`/section-8/${state.slug}/`}>{state.name}</a>
+    <span aria-hidden="true"> / </span>
+    <span>{copy.city}</span>
+  </nav>
+
+  <header class="city-page__hero">
+    <h1>Section 8 programs &amp; vouchers in {copy.city}, {copy.stateAbbr}</h1>
+    <p class="meta">
+      {copy.countyPhrase} · {state.name}
+    </p>
+    <p>{copy.programIntro}</p>
+  </header>
+
+  <section class="card city-page__cta">
+    <h2>Estimate voucher help in {copy.city}</h2>
+    <p>{copy.calculatorPitch}</p>
+    <a
+      class="btn btn-primary"
+      href="/calculator/"
+      data-analytics="cta_calculator_city"
+      data-analytics-city={copy.city}
+      data-analytics-state={copy.stateAbbr}
+    >
+      Open Section 8 calculator
+    </a>
+  </section>
+
+  <section class="city-page__section">
+    <h2>Housing Choice Voucher program</h2>
+    <p>{copy.voucherExplain}</p>
+    <p>{copy.waitingListNote}</p>
+    <ul>
+      <li><strong>Project-based Section 8</strong> — subsidy stays with specific buildings (different application path).</li>
+      <li><strong>Tenant-based vouchers (HCV)</strong> — you find a unit; the voucher moves with you in many cases after initial lease-up.</li>
+      <li><strong>Local preferences</strong> — veterans, elderly, disabled, or working families may get priority on some lists.</li>
+    </ul>
+  </section>
+
+  <section class="city-page__section">
+    <h2>Section 8 guides for {copy.city} renters</h2>
+    <p>
+      These guides explain vouchers, income limits, and rent math for households in {copy.city} and across
+      {copy.stateName}. Each links to our calculator so you can run numbers for your ZIP.
+    </p>
+    <div class="guides-grid">
+      {allGuides.map((guide) => (
+        <a class="guide-card" href={`/guides/${guide.id}/`}>
+          {guide.data.tags[0] && <span class="tag">{guide.data.tags[0]}</span>}
+          <h3>{guide.data.title}</h3>
+          <p>{guide.data.description}</p>
+        </a>
+      ))}
+    </div>
+    <p class="city-page__more-guides">
+      <a href="/guides/" data-analytics="cta_guides_index_from_city">All Section 8 guides →</a>
+    </p>
+  </section>
+
+  <section class="city-page__section">
+    <h2>Apply near {copy.city}</h2>
+    <ol>
+      <li>Confirm income limits with the <a href="/calculator/" data-analytics="cta_calculator_city_inline">calculator</a>.</li>
+      <li>
+        Find your PHA via the
+        <a href={copy.phaFinderUrl} rel="noopener noreferrer" target="_blank">HUD PHA contact directory</a>
+        (search by {copy.stateName} / {copy.countyPhrase}).
+      </li>
+      <li>Join the waiting list when the PHA opens applications — many lists close for years at a time.</li>
+      <li>When selected, find a rental at or below the payment standard and complete inspection.</li>
+    </ol>
+  </section>
+
+  <section class="city-page__section city-page__faq">
+    <h2>FAQ — Section 8 in {copy.city}</h2>
+    {faq.map((item) => (
+      <details class="faq-item">
+        <summary>{item.question}</summary>
+        <p>{item.answer}</p>
+      </details>
+    ))}
+  </section>
+
+  <footer class="city-page__footer">
+    <a class="btn btn-secondary" href={`/section-8/${state.slug}/`}>
+      More cities in {copy.stateName}
+    </a>
+    <a
+      class="btn btn-primary"
+      href="/calculator/"
+      data-analytics="cta_calculator_city_footer"
+      data-analytics-city={copy.city}
+      data-analytics-state={copy.stateAbbr}
+    >
+      Calculate for {copy.city}
+    </a>
+  </footer>
+</article>
+
+<style>
+  .city-page {
+    padding: 2rem 0 4rem;
+  }
+  .city-page__hero h1 {
+    margin-bottom: 0.5rem;
+  }
+  .city-page__section {
+    margin-top: 2.5rem;
+  }
+  .city-page__section h2 {
+    margin-bottom: 0.75rem;
+  }
+  .city-page__section h3 {
+    font-size: 1.05rem;
+    margin: 0 0 0.5rem;
+  }
+  .city-page__cta {
+    margin-top: 1.5rem;
+  }
+  .city-page__cta h2 {
+    margin-top: 0;
+  }
+  .city-page__more-guides {
+    margin-top: 1rem;
+  }
+  .city-page__faq .faq-item {
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.65rem;
+    background: var(--color-surface);
+  }
+  .city-page__faq summary {
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .city-page__faq p {
+    margin: 0.75rem 0 0;
+    color: var(--color-muted);
+  }
+  .city-page__footer {
+    margin-top: 2.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+  .breadcrumb {
+    font-size: 0.9rem;
+    color: var(--color-muted);
+    margin-bottom: 1rem;
+  }
+  .breadcrumb a {
+    color: var(--color-primary);
+  }
+  .meta {
+    color: var(--color-muted);
+  }
+</style>

@@ -1,0 +1,289 @@
+---
+/** Interactive Section 8 calculator — ZIP confirms city & county, then estimates help. */
+---
+
+<section class="card calculator" id="section8-calculator">
+  <h2>Section 8 eligibility &amp; rent estimate</h2>
+  <p>Enter your ZIP to load city and county — confirm your area, then see income limits and estimated voucher help.</p>
+
+  <form id="calc-form" novalidate>
+    <fieldset>
+      <legend class="hidden">Location</legend>
+      <div class="form-row cols-3">
+        <div class="form-field">
+          <label for="zip">ZIP code</label>
+          <input id="zip" name="zip" inputmode="numeric" pattern="\d{5}" maxlength="5" placeholder="80204" required />
+          <small>We'll look up matching cities and counties.</small>
+        </div>
+        <div class="form-field">
+          <label for="city">City</label>
+          <select id="city" name="city" disabled required>
+            <option value="">Enter ZIP first</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label for="county">County</label>
+          <select id="county" name="county" disabled required>
+            <option value="">Enter ZIP first</option>
+          </select>
+        </div>
+      </div>
+      <p id="location-status" class="hidden" role="status"></p>
+    </fieldset>
+
+    <fieldset>
+      <legend>Household</legend>
+      <div class="form-row cols-2">
+        <div class="form-field">
+          <label for="householdSize">Household size</label>
+          <select id="householdSize" name="householdSize" required>
+            {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
+              <option value={n} selected={n === 3}>{n} {n === 1 ? 'person' : 'people'}</option>
+            ))}
+          </select>
+        </div>
+        <div class="form-field">
+          <label for="bedrooms">Bedrooms on voucher</label>
+          <select id="bedrooms" name="bedrooms" required>
+            <option value="0">Studio</option>
+            <option value="1">1 bedroom</option>
+            <option value="2" selected>2 bedrooms</option>
+            <option value="3">3 bedrooms</option>
+            <option value="4">4 bedrooms</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row cols-2">
+        <div class="form-field">
+          <label for="annualGrossIncome">Annual gross household income ($)</label>
+          <input id="annualGrossIncome" name="annualGrossIncome" type="number" min="0" step="100" placeholder="28000" required />
+        </div>
+        <div class="form-field">
+          <label for="annualDeductions">Annual income deductions ($) <small>(optional)</small></label>
+          <input id="annualDeductions" name="annualDeductions" type="number" min="0" step="100" placeholder="0" />
+          <small>Elderly/disabled, childcare, medical — per PHA rules.</small>
+        </div>
+      </div>
+      <div class="form-field">
+        <label for="monthlyRent">Monthly rent you're considering ($) <small>(optional)</small></label>
+        <input id="monthlyRent" name="monthlyRent" type="number" min="0" step="50" placeholder="1400" />
+        <small>Leave blank for maximum possible subsidy before you pick a unit.</small>
+      </div>
+    </fieldset>
+
+    <button type="submit" class="btn btn-primary" id="calc-submit">Calculate my estimate</button>
+  </form>
+
+  <div id="calc-results" class="results-panel hidden" aria-live="polite"></div>
+</section>
+
+<script>
+  import { trackEvent } from '../lib/analytics';
+
+  const form = document.getElementById('calc-form') as HTMLFormElement;
+  const zipInput = document.getElementById('zip') as HTMLInputElement;
+  const citySelect = document.getElementById('city') as HTMLSelectElement;
+  const countySelect = document.getElementById('county') as HTMLSelectElement;
+  const statusEl = document.getElementById('location-status') as HTMLParagraphElement;
+  const resultsEl = document.getElementById('calc-results') as HTMLDivElement;
+  const submitBtn = document.getElementById('calc-submit') as HTMLButtonElement;
+
+  type ZipLookup = {
+    zip: string;
+    places: { city: string; state: string; stateAbbr: string }[];
+    counties: { name: string; entityId: string; fullFips: string }[];
+  };
+
+  let lookupCache: ZipLookup | null = null;
+  let zipDebounce: ReturnType<typeof setTimeout> | undefined;
+  let lastTrackedZip = '';
+
+  trackEvent('calculator_view', { page_path: window.location.pathname });
+
+  function formatMoney(n: number) {
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n);
+  }
+
+  function setStatus(msg: string, visible = true) {
+    statusEl.textContent = msg;
+    statusEl.classList.toggle('hidden', !visible);
+  }
+
+  function fillLocation(data: ZipLookup) {
+    lookupCache = data;
+    citySelect.innerHTML = '';
+    countySelect.innerHTML = '';
+
+    for (const p of data.places) {
+      const opt = document.createElement('option');
+      opt.value = p.city;
+      opt.textContent = `${p.city}, ${p.stateAbbr}`;
+      opt.dataset.stateAbbr = p.stateAbbr;
+      citySelect.appendChild(opt);
+    }
+
+    for (const c of data.counties) {
+      const opt = document.createElement('option');
+      opt.value = c.entityId;
+      opt.textContent = c.name;
+      opt.dataset.countyName = c.name;
+      countySelect.appendChild(opt);
+    }
+
+    citySelect.disabled = false;
+    countySelect.disabled = false;
+    setStatus(`Found ${data.places.length} place(s) and ${data.counties.length} county option(s) for ZIP ${data.zip}. Confirm below.`);
+
+    if (data.zip !== lastTrackedZip) {
+      lastTrackedZip = data.zip;
+      trackEvent('zip_lookup_success', {
+        zip: data.zip,
+        state: data.places[0]?.stateAbbr ?? '',
+        place_count: data.places.length,
+        county_count: data.counties.length,
+      });
+    }
+  }
+
+  async function lookupZipCode(zip: string) {
+    setStatus('Looking up ZIP…');
+    trackEvent('zip_lookup_started', { zip });
+    const res = await fetch(`/api/location/zip?zip=${encodeURIComponent(zip)}`);
+    const data = await res.json();
+    if (!res.ok) {
+      trackEvent('zip_lookup_error', { zip, error_message: data.error ?? 'failed' });
+      throw new Error(data.error ?? 'ZIP lookup failed');
+    }
+    fillLocation(data);
+  }
+
+  zipInput.addEventListener('input', () => {
+    const zip = zipInput.value.replace(/\D/g, '').slice(0, 5);
+    zipInput.value = zip;
+    lookupCache = null;
+    if (zip.length !== 5) {
+      citySelect.disabled = true;
+      countySelect.disabled = true;
+      setStatus('', false);
+      return;
+    }
+    clearTimeout(zipDebounce);
+    zipDebounce = setTimeout(
+      () => lookupZipCode(zip).catch((e) => setStatus(e instanceof Error ? e.message : 'ZIP lookup failed')),
+      400,
+    );
+  });
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!lookupCache) {
+      setStatus('Enter a valid ZIP and wait for city/county to load.');
+      trackEvent('calculate_blocked', { reason: 'no_zip_lookup' });
+      return;
+    }
+
+    const countyOpt = countySelect.selectedOptions[0];
+    const cityOpt = citySelect.selectedOptions[0];
+    const monthlyRentInput = document.getElementById('monthlyRent') as HTMLInputElement;
+
+    trackEvent('calculate_click', {
+      zip: lookupCache.zip,
+      state: cityOpt?.dataset.stateAbbr ?? '',
+      household_size: Number((document.getElementById('householdSize') as HTMLSelectElement).value),
+      bedrooms: Number((document.getElementById('bedrooms') as HTMLSelectElement).value),
+      has_rent: Boolean(monthlyRentInput?.value),
+    });
+
+    submitBtn.disabled = true;
+    form.classList.add('loading');
+    resultsEl.classList.add('hidden');
+
+    try {
+      const res = await fetch('/api/calculate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          zip: lookupCache.zip,
+          city: cityOpt?.value,
+          county: countyOpt?.dataset.countyName,
+          stateAbbr: cityOpt?.dataset.stateAbbr,
+          entityId: countyOpt?.value,
+          annualGrossIncome: Number((document.getElementById('annualGrossIncome') as HTMLInputElement).value),
+          annualDeductions: Number((document.getElementById('annualDeductions') as HTMLInputElement).value) || 0,
+          householdSize: Number((document.getElementById('householdSize') as HTMLSelectElement).value),
+          bedrooms: Number((document.getElementById('bedrooms') as HTMLSelectElement).value),
+          monthlyRent: (document.getElementById('monthlyRent') as HTMLInputElement).value
+            ? Number((document.getElementById('monthlyRent') as HTMLInputElement).value)
+            : undefined,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? 'Calculation failed');
+
+      const { eligibility, subsidy, incomeLimits, fmr, disclaimer } = data;
+      const statusClass = eligibility.status;
+
+      let rentNote = '';
+      if (subsidy.actualHap != null) {
+        rentNote = `<p>With rent entered: estimated voucher payment <strong>${formatMoney(subsidy.actualHap)}/mo</strong>.</p>`;
+        if (subsidy.rentAboveStandard) {
+          rentNote += `<p class="warn">Rent is ${formatMoney(subsidy.rentAboveStandard)} above the payment standard — you pay that extra.</p>`;
+        }
+      }
+
+      resultsEl.dataset.status = statusClass;
+      resultsEl.innerHTML = `
+        <h3>${eligibility.label}</h3>
+        <p><strong>${incomeLimits.areaName}</strong> (HUD ${incomeLimits.year}) — very low income limit for your household: <strong>${formatMoney(eligibility.veryLowLimit)}/yr</strong></p>
+        <div class="stat-grid">
+          <div class="stat"><p class="label">Your share (TTP)</p><p class="value">${formatMoney(subsidy.totalTenantPayment)}/mo</p></div>
+          <div class="stat"><p class="label">Payment standard (${fmr.bedrooms} BR)</p><p class="value">${formatMoney(subsidy.paymentStandard)}/mo</p></div>
+          <div class="stat"><p class="label">Max voucher help</p><p class="value">${formatMoney(subsidy.maxMonthlySubsidy)}/mo</p></div>
+          <div class="stat"><p class="label">FMR basis</p><p class="value">${formatMoney(fmr.fmrAmount)}/mo</p></div>
+        </div>
+        ${rentNote}
+        <p><small>${disclaimer}</small></p>
+      `;
+      resultsEl.classList.remove('hidden');
+
+      trackEvent('calculate_success', {
+        zip: lookupCache.zip,
+        state: cityOpt?.dataset.stateAbbr ?? '',
+        eligibility: eligibility.status,
+        max_subsidy: subsidy.maxMonthlySubsidy,
+        ttp: subsidy.totalTenantPayment,
+      });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Something went wrong.';
+      trackEvent('calculate_error', {
+        zip: lookupCache?.zip ?? '',
+        error_message: message.slice(0, 120),
+      });
+      resultsEl.dataset.status = 'error';
+      resultsEl.innerHTML = `<p>${message}</p>`;
+      resultsEl.classList.remove('hidden');
+    } finally {
+      submitBtn.disabled = false;
+      form.classList.remove('loading');
+    }
+  });
+</script>
+
+<style>
+  .calculator h2 {
+    margin-top: 0;
+  }
+  fieldset {
+    border: none;
+    padding: 0;
+    margin: 0 0 1.25rem;
+  }
+  legend {
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+  }
+  .warn {
+    color: var(--color-warning);
+  }
+</style>

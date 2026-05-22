@@ -1,0 +1,114 @@
+---
+import type { PlaceRecord } from '../lib/places';
+import { groupPlacesByLetter } from '../lib/places';
+
+interface Props {
+  places: PlaceRecord[];
+  stateSlug: string;
+}
+
+const { places, stateSlug } = Astro.props;
+const byLetter = groupPlacesByLetter(places);
+const letters = [...byLetter.keys()];
+---
+
+<div class="city-directory">
+  <div class="city-directory__search">
+    <label for="city-filter">Filter cities</label>
+    <input
+      id="city-filter"
+      type="search"
+      placeholder="Type to filter…"
+      autocomplete="off"
+      aria-controls="city-directory-list"
+    />
+    <p class="city-directory__count">{places.length} cities &amp; places indexed</p>
+  </div>
+
+  <div id="city-directory-list" class="city-directory__list">
+    {
+      letters.map((letter) => (
+        <section class="city-directory__section" data-letter={letter}>
+          <h3>{letter}</h3>
+          <ul>
+            {byLetter.get(letter)!.map((place) => (
+              <li data-name={place.displayName.toLowerCase()}>
+                <a href={`/section-8/${stateSlug}/${place.slug}/`}>
+                  {place.displayName}
+                </a>
+                {place.type === 'cdp' && <span class="cdp-badge">CDP</span>}
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))
+    }
+  </div>
+</div>
+
+<script>
+  const input = document.getElementById('city-filter') as HTMLInputElement | null;
+  const list = document.getElementById('city-directory-list');
+  if (input && list) {
+    input.addEventListener('input', () => {
+      const q = input.value.trim().toLowerCase();
+      list.querySelectorAll<HTMLElement>('.city-directory__section').forEach((section) => {
+        let visible = 0;
+        section.querySelectorAll<HTMLElement>('li').forEach((li) => {
+          const name = li.dataset.name ?? '';
+          const show = !q || name.includes(q);
+          li.style.display = show ? '' : 'none';
+          if (show) visible++;
+        });
+        section.style.display = visible > 0 ? '' : 'none';
+      });
+    });
+  }
+</script>
+
+<style>
+  .city-directory__search {
+    margin-bottom: 1.25rem;
+  }
+  .city-directory__search label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.35rem;
+  }
+  .city-directory__search input {
+    width: 100%;
+    max-width: 24rem;
+    padding: 0.6rem 0.75rem;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    font-size: 1rem;
+  }
+  .city-directory__count {
+    color: var(--color-muted);
+    font-size: 0.9rem;
+    margin: 0.5rem 0 0;
+  }
+  .city-directory__section h3 {
+    font-size: 1rem;
+    color: var(--color-primary-dark);
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: 0.25rem;
+    margin: 1.25rem 0 0.5rem;
+  }
+  .city-directory__section ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 0.25rem 1.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+  }
+  .city-directory__section li {
+    font-size: 0.9rem;
+  }
+  .cdp-badge {
+    font-size: 0.65rem;
+    color: var(--color-muted);
+    margin-left: 0.25rem;
+  }
+</style>

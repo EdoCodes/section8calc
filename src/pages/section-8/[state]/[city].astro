@@ -1,0 +1,46 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import CityPageContent from '../../../components/CityPageContent.astro';
+import { getCityFaq } from '../../../lib/city-content';
+import { getAllCityPaths } from '../../../lib/places';
+import type { PlaceRecord, StateMeta } from '../../../lib/places';
+
+export function getStaticPaths() {
+  return getAllCityPaths();
+}
+
+const { place, state } = Astro.props as { place: PlaceRecord; state: StateMeta };
+
+const countyList = place.counties.join(', ');
+const title = `Section 8 Programs & Vouchers in ${place.displayName}, ${state.abbr}`;
+const description = `Section 8 Housing Choice Voucher programs in ${place.displayName}, ${state.name}. Local guides, income limits for ${countyList || state.name}, and a free rent & eligibility calculator.`;
+const canonicalPath = `/section-8/${state.slug}/${place.slug}/`;
+
+const breadcrumbLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Section 8 by city', item: new URL('/section-8/', Astro.site).href },
+    { '@type': 'ListItem', position: 2, name: state.name, item: new URL(`/section-8/${state.slug}/`, Astro.site).href },
+    { '@type': 'ListItem', position: 3, name: place.displayName },
+  ],
+};
+
+const faqLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: getCityFaq(place, state).map((item) => ({
+    '@type': 'Question',
+    name: item.question,
+    acceptedAnswer: { '@type': 'Answer', text: item.answer },
+  })),
+};
+---
+
+<BaseLayout {title} {description} {canonicalPath}>
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(breadcrumbLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(faqLd)} />
+  </Fragment>
+  <CityPageContent place={place} state={state} />
+</BaseLayout>

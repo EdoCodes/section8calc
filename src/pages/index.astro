@@ -1,0 +1,65 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const guides = (await getCollection('guides', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, 6);
+---
+
+<BaseLayout
+  title="Section 8 Calculator — Income Limits & Voucher Rent Estimates"
+  description="Free Section 8 housing calculator: check voucher eligibility by ZIP, city, and county. HUD income limits, rent estimates, and expert guides."
+>
+  <section class="hero">
+    <div class="container">
+      <h1>How much Section 8 help could you get?</h1>
+      <p>
+        Enter your ZIP, confirm your city and county, and get an estimate based on HUD income limits and Fair Market Rents —
+        the same data Public Housing Authorities use.
+      </p>
+      <p>
+        <a class="btn btn-primary" href="/calculator/" data-analytics="cta_calculator_home">Start the calculator</a>
+        <a class="btn btn-secondary" href="/section-8/">Browse by city</a>
+        <a class="btn btn-secondary" href="/guides/">Read housing guides</a>
+      </p>
+    </div>
+  </section>
+
+  <section class="container" style="padding-bottom: 3rem;">
+    <div class="grid-2">
+      <div class="card">
+        <h2>Built for searchers &amp; renters</h2>
+        <ul>
+          <li>ZIP-first lookup fills <strong>city</strong> and <strong>county</strong> dropdowns to confirm your HUD area</li>
+          <li>Very low &amp; low income limit checks by household size</li>
+          <li>Estimated tenant share and maximum voucher subsidy</li>
+          <li>Optional rent input to see payment above the standard</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h2>SEO content hub</h2>
+        <p>
+          Publish guides on Section 8 applications, waiting lists, income limits, payment standards, and moving with a voucher.
+          Each article links to the calculator — capturing daily searches for Section 8 housing help.
+        </p>
+        <a href="/guides/">Browse all guides →</a>
+      </div>
+    </div>
+  </section>
+
+  {guides.length > 0 && (
+    <section class="container" style="padding-bottom: 4rem;">
+      <h2>Popular Section 8 guides</h2>
+      <div class="guides-grid" style="margin-top: 1rem;">
+        {guides.map((guide) => (
+          <a class="guide-card" href={`/guides/${guide.id}/`}>
+            {guide.data.tags[0] && <span class="tag">{guide.data.tags[0]}</span>}
+            <h2>{guide.data.title}</h2>
+            <p>{guide.data.description}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+  )}
+</BaseLayout>

@@ -1,0 +1,65 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const guides = await getCollection('guides', ({ data }) => !data.draft);
+  return guides.map((guide) => ({
+    params: { slug: guide.id },
+    props: { guide },
+  }));
+}
+
+const { guide } = Astro.props;
+const { Content } = await render(guide);
+const { title, description, pubDate, updatedDate, tags } = guide.data;
+
+const articleLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: title,
+  description,
+  datePublished: pubDate.toISOString(),
+  dateModified: (updatedDate ?? pubDate).toISOString(),
+};
+---
+
+<BaseLayout title={title} description={description} ogType="article">
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(articleLd)} />
+  </Fragment>
+
+  <article class="container prose" style="padding: 2rem 0 4rem;">
+    <p>
+      <a href="/guides/">← All guides</a>
+    </p>
+    {tags.map((tag) => <span class="tag">{tag}</span>)}
+    <h1>{title}</h1>
+    <p style="color: var(--color-muted);">
+      Published {pubDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+    </p>
+
+    <div class="card" style="margin: 1.5rem 0;">
+      <p style="margin: 0;">
+        <strong>Run your numbers:</strong>
+        <a href="/calculator/" data-analytics="cta_calculator_guide">Use the Section 8 calculator</a> with your ZIP to see eligibility and estimated voucher help.
+      </p>
+    </div>
+
+    <Content />
+
+    <hr style="margin: 2.5rem 0; border: none; border-top: 1px solid var(--color-border);" />
+    <p>
+      <a class="btn btn-primary" href="/calculator/" data-analytics="cta_calculator_guide_footer">Section 8 calculator</a>
+    </p>
+  </article>
+</BaseLayout>
+
+<style>
+  .prose :global(h2) {
+    margin-top: 2rem;
+  }
+  .prose :global(a) {
+    font-weight: 500;
+  }
+</style>

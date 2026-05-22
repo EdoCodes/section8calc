@@ -1,0 +1,22 @@
+{
+  "name": "section8",
+  "type": "module",
+  "version": "0.0.1",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "generate:places": "node scripts/generate-places.mjs",
+    "prebuild": "node scripts/generate-places.mjs",
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/mdx": "^5.0.6",
+    "@astrojs/netlify": "^7.0.10",
+    "@astrojs/sitemap": "^3.7.2",
+    "astro": "^6.3.7"
+  }
+}
