@@ -2,6 +2,7 @@
 import BaseLayout from '../../../../layouts/BaseLayout.astro';
 import CityPageContent from '../../../../components/CityPageContent.astro';
 import { getCityFaq } from '../../../../lib/city-content';
+import { getCityEnrichmentMeta, getCityExtraFaq } from '../../../../lib/city-enrichment';
 import { cityPath, citiesPath, statePath } from '../../../../lib/i18n';
 import { getAllCityPaths } from '../../../../lib/places';
 import type { PlaceRecord, StateMeta } from '../../../../lib/places';
@@ -13,9 +14,14 @@ export function getStaticPaths() {
 const { place, state } = Astro.props as { place: PlaceRecord; state: StateMeta };
 
 const countyList = place.counties.join(', ');
-const title = `Programas Section 8 y vouchers en ${place.displayName}, ${state.abbr}`;
-const description = `Programas Housing Choice Voucher en ${place.displayName}, ${state.name}. Guías locales, límites de ingreso para ${countyList || state.name} y calculadora gratuita.`;
+const enrichmentMeta = await getCityEnrichmentMeta(state.slug, place.slug, 'es');
+const defaultTitle = `Programas Section 8 y vouchers en ${place.displayName}, ${state.abbr}`;
+const defaultDescription = `Programas Housing Choice Voucher en ${place.displayName}, ${state.name}. Guías locales, límites de ingreso para ${countyList || state.name} y calculadora gratuita.`;
+const title = enrichmentMeta?.seoTitle ?? defaultTitle;
+const description = enrichmentMeta?.seoDescription ?? defaultDescription;
 const canonicalPath = cityPath('es', state.slug, place.slug);
+
+const faqItems = [...getCityFaq(place, state, 'es'), ...(await getCityExtraFaq(state.slug, place.slug, 'es'))];
 
 const breadcrumbLd = {
   '@context': 'https://schema.org',
@@ -30,7 +36,7 @@ const breadcrumbLd = {
 const faqLd = {
   '@context': 'https://schema.org',
   '@type': 'FAQPage',
-  mainEntity: getCityFaq(place, state, 'es').map((item) => ({
+  mainEntity: faqItems.map((item) => ({
     '@type': 'Question',
     name: item.question,
     acceptedAnswer: { '@type': 'Answer', text: item.answer },

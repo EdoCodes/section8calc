@@ -1,0 +1,103 @@
+---
+import { render } from 'astro:content';
+import type { Lang } from '../lib/i18n';
+import { getCityArticlesForPlace, getCityEnrichmentLabels, type CityArticleEntry } from '../lib/city-enrichment';
+
+interface Props {
+  stateSlug: string;
+  citySlug: string;
+  lang?: Lang;
+}
+
+const { stateSlug, citySlug, lang = 'en' } = Astro.props;
+
+const articles = await getCityArticlesForPlace(stateSlug, citySlug, lang);
+if (articles.length === 0) {
+  return null;
+}
+
+const labels = getCityEnrichmentLabels(lang);
+
+const rendered = await Promise.all(
+  articles.map(async (article: CityArticleEntry) => {
+    const { Content } = await render(article);
+    return { article, Content };
+  }),
+);
+---
+
+<section class="city-enrichment" aria-label={labels.badge}>
+  <p class="city-enrichment__badge">{labels.badge}</p>
+
+  {
+    rendered.map(({ article, Content }) => (
+      <article class="city-enrichment__article">
+        <header class="city-enrichment__header">
+          <h2>{article.data.title}</h2>
+          {article.data.description && <p class="city-enrichment__lead">{article.data.description}</p>}
+          {article.data.pubDate && (
+            <p class="city-enrichment__date">
+              {labels.updated}{' '}
+              {article.data.pubDate.toLocaleDateString(lang === 'es' ? 'es-US' : 'en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              })}
+            </p>
+          )}
+        </header>
+        <div class="prose city-enrichment__body">
+          <Content />
+        </div>
+      </article>
+    ))
+  }
+</section>
+
+<style>
+  .city-enrichment {
+    margin-top: 1.75rem;
+    padding-top: 1.5rem;
+    border-top: 2px solid var(--color-primary);
+  }
+
+  .city-enrichment__badge {
+    display: inline-block;
+    margin: 0 0 1rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-primary-dark);
+    background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+    padding: 0.25rem 0.55rem;
+    border-radius: 4px;
+  }
+
+  .city-enrichment__article + .city-enrichment__article {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .city-enrichment__header h2 {
+    margin: 0 0 0.5rem;
+    font-size: 1.35rem;
+  }
+
+  .city-enrichment__lead {
+    margin: 0 0 0.5rem;
+    color: var(--color-ink-muted);
+    line-height: 1.5;
+  }
+
+  .city-enrichment__date {
+    margin: 0 0 0.75rem;
+    font-size: 0.82rem;
+    color: var(--color-ink-muted);
+  }
+
+  .city-enrichment__body {
+    margin-top: 0.5rem;
+  }
+</style>
