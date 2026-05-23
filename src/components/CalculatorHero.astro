@@ -1,0 +1,44 @@
+---
+import type { Lang } from '../lib/i18n';
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = 'en' } = Astro.props;
+
+const copy =
+  lang === 'es'
+    ? {
+        step: 'Paso 1 de 3',
+        title: 'Estimación Section 8 estilo federal',
+        lead: 'Ingrese su ZIP para cargar ciudad y condado, luego vea límites HUD y ayuda estimada del voucher.',
+      }
+    : {
+        step: 'Step 1 of 3',
+        title: 'Federal-style Section 8 estimate',
+        lead: 'Enter your ZIP to load city and county, then see HUD income limits and estimated voucher help.',
+      };
+---
+
+<section class="calc-hero" aria-labelledby="calc-hero-title">
+  <div class="calc-hero__houses" aria-hidden="true">
+    <svg class="calc-hero__house calc-hero__house--1" viewBox="0 0 120 100" fill="none">
+      <path d="M60 12L18 48v40h84V48L60 12Z" stroke="currentColor" stroke-width="2" opacity="0.35" />
+      <rect x="48" y="58" width="24" height="30" fill="currentColor" opacity="0.12" />
+    </svg>
+    <svg class="calc-hero__house calc-hero__house--2" viewBox="0 0 120 100" fill="none">
+      <path d="M60 8L12 50v42h96V50L60 8Z" stroke="currentColor" stroke-width="2" opacity="0.28" />
+      <rect x="44" y="56" width="32" height="36" fill="currentColor" opacity="0.1" />
+    </svg>
+    <svg class="calc-hero__house calc-hero__house--3" viewBox="0 0 120 100" fill="none">
+      <path d="M60 16L24 46v38h72V46L60 16Z" stroke="currentColor" stroke-width="2" opacity="0.22" />
+      <rect x="50" y="60" width="20" height="24" fill="currentColor" opacity="0.1" />
+    </svg>
+  </div>
+  <div class="container calc-hero__content">
+    <p class="calc-step-label">{copy.step}</p>
+    <h1 id="calc-hero-title" class="font-display">{copy.title}</h1>
+    <p class="calc-hero__lead">{copy.lead}</p>
+  </div>
+</section>

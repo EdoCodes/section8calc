@@ -1,6 +1,6 @@
 ---
 import '../styles/calculator.css';
-import { getCalcStrings, type Lang } from '../lib/i18n';
+import { getCalcClientStrings, getCalcStrings, type Lang } from '../lib/i18n';
 
 interface Props {
   lang?: Lang;
@@ -8,7 +8,7 @@ interface Props {
 
 const lang = Astro.props.lang ?? 'en';
 const t = getCalcStrings(lang);
-const locale = lang === 'es' ? 'es-US' : 'en-US';
+const c = getCalcClientStrings(lang);
 ---
 
 <section class="calc-shell" id="section8-calculator" data-lang={lang}>
@@ -19,30 +19,48 @@ const locale = lang === 'es' ? 'es-US' : 'en-US';
         <p>{t.subtitle}</p>
       </div>
 
-      <div class="calc-steps" aria-hidden="true">
-        <div class="calc-step-pill is-active">
+      <div class="calc-steps" id="calc-steps" aria-hidden="true">
+        <div class="calc-step-pill is-active" data-step="1">
           <span class="calc-step-num">1</span>
           {t.stepLocation}
         </div>
-        <div class="calc-step-pill">
+        <div class="calc-step-pill" data-step="2">
           <span class="calc-step-num">2</span>
           {t.stepHousehold}
         </div>
-        <div class="calc-step-pill">
+        <div class="calc-step-pill" data-step="3">
           <span class="calc-step-num">3</span>
           {t.stepResults}
         </div>
       </div>
 
       <form id="calc-form" class="calc-form-body" novalidate>
-        <fieldset>
+        <fieldset class="calc-fieldset calc-fieldset--zip">
           <legend>{t.stepLocation}</legend>
-          <div class="form-row cols-3">
-            <div class="form-field">
+
+          <div class="zip-lookup-row">
+            <div class="form-field zip-lookup-row__input">
               <label for="zip">{t.zip}</label>
-              <input id="zip" name="zip" inputmode="numeric" pattern="\d{5}" maxlength="5" placeholder="80204" required />
+              <input
+                id="zip"
+                name="zip"
+                inputmode="numeric"
+                pattern="\d{5}"
+                maxlength="5"
+                placeholder="90501"
+                autocomplete="postal-code"
+                required
+              />
               <small>{t.zipHint}</small>
             </div>
+            <button type="button" class="btn btn-secondary zip-lookup-btn" id="zip-lookup-btn">
+              {c.zipLookupBtn}
+            </button>
+          </div>
+
+          <p id="location-status" class="calc-status hidden" role="status"></p>
+
+          <div class="form-row cols-2 location-fields" id="location-fields">
             <div class="form-field">
               <label for="city">{t.city}</label>
               <select id="city" name="city" disabled required>
@@ -56,10 +74,9 @@ const locale = lang === 'es' ? 'es-US' : 'en-US';
               </select>
             </div>
           </div>
-          <p id="location-status" class="calc-status hidden" role="status"></p>
         </fieldset>
 
-        <fieldset>
+        <fieldset class="calc-fieldset" id="household-fieldset">
           <legend>{t.householdLegend}</legend>
           <div class="form-row cols-2">
             <div class="form-field">
@@ -101,11 +118,14 @@ const locale = lang === 'es' ? 'es-US' : 'en-US';
           </div>
         </fieldset>
 
-        <button type="submit" class="btn btn-primary calc-submit" id="calc-submit">{t.submit}</button>
+        <button type="submit" class="btn btn-primary calc-submit" id="calc-submit" disabled>
+          {t.submit}
+        </button>
+        <p class="calc-submit-hint" id="calc-submit-hint">{t.zipFirst}</p>
       </form>
     </div>
 
-    <aside class="calc-results-sidebar" aria-live="polite">
+    <aside class="calc-results-sidebar" id="calc-results-sidebar" aria-live="polite">
       <h3>{t.resultsTitle}</h3>
       <div id="calc-results-placeholder">
         <div class="placeholder-icon" aria-hidden="true">📊</div>
@@ -116,49 +136,87 @@ const locale = lang === 'es' ? 'es-US' : 'en-US';
   </div>
 </section>
 
-<script define:vars={{ t, locale, lang }}>
+<script define:vars={{ c }}>
   import { trackEvent } from '../lib/analytics';
 
   const form = document.getElementById('calc-form');
   const zipInput = document.getElementById('zip');
+  const zipLookupBtn = document.getElementById('zip-lookup-btn');
   const citySelect = document.getElementById('city');
   const countySelect = document.getElementById('county');
+  const locationFields = document.getElementById('location-fields');
   const statusEl = document.getElementById('location-status');
   const resultsEl = document.getElementById('calc-results');
   const placeholderEl = document.getElementById('calc-results-placeholder');
   const submitBtn = document.getElementById('calc-submit');
+  const submitHint = document.getElementById('calc-submit-hint');
+  const stepsEl = document.getElementById('calc-steps');
+  const resultsSidebar = document.getElementById('calc-results-sidebar');
 
   const labels = {
-    eligible: t.eligible,
-    possibly_eligible: t.possiblyEligible,
-    not_eligible: t.notEligible,
+    eligible: c.eligible,
+    possibly_eligible: c.possiblyEligible,
+    not_eligible: c.notEligible,
   };
 
   let lookupCache = null;
   let zipDebounce;
   let lastTrackedZip = '';
+  let zipLookupInFlight = false;
 
-  trackEvent('calculator_view', { page_path: window.location.pathname, lang });
-
-  const zipFromUrl = new URLSearchParams(window.location.search).get('zip')?.replace(/\D/g, '').slice(0, 5);
-  if (zipFromUrl && zipFromUrl.length === 5) {
-    zipInput.value = zipFromUrl;
-    lookupZipCode(zipFromUrl).catch((e) => setStatus(e.message, true, true));
+  function tpl(template, vars) {
+    return template.replace(/\{(\w+)\}/g, (_, key) => String(vars[key] ?? ''));
   }
+
+  trackEvent('calculator_view', { page_path: window.location.pathname, lang: c.lang });
 
   function formatMoney(n) {
-    return new Intl.NumberFormat(locale, { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n);
+    return new Intl.NumberFormat(c.locale, { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n);
   }
 
-  function setStatus(msg, visible = true, isError = false) {
+  function setStatus(msg, visible = true, isError = false, isSuccess = false) {
     statusEl.textContent = msg;
     statusEl.classList.toggle('hidden', !visible);
     statusEl.classList.toggle('is-error', isError);
+    statusEl.classList.toggle('is-success', isSuccess);
+  }
+
+  function setStepActive(step) {
+    stepsEl?.querySelectorAll('.calc-step-pill').forEach((pill) => {
+      const n = Number(pill.getAttribute('data-step'));
+      pill.classList.toggle('is-active', n === step);
+      pill.classList.toggle('is-done', n < step);
+    });
+  }
+
+  function updateSubmitState() {
+    const income = Number(document.getElementById('annualGrossIncome')?.value);
+    const ready = Boolean(lookupCache) && Number.isFinite(income) && income >= 0;
+    submitBtn.disabled = !ready;
+    if (lookupCache && ready) {
+      submitHint.textContent = c.locationReady;
+      submitHint.classList.remove('is-error');
+    } else if (!lookupCache) {
+      submitHint.textContent = c.zipFirst;
+    } else {
+      submitHint.textContent = '';
+    }
   }
 
   function showResults() {
     placeholderEl.classList.add('hidden');
     resultsEl.classList.remove('hidden');
+    setStepActive(3);
+    resultsSidebar?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  async function parseJsonResponse(res) {
+    const text = await res.text();
+    try {
+      return JSON.parse(text);
+    } catch {
+      throw new Error(c.apiUnavailable);
+    }
   }
 
   function fillLocation(data) {
@@ -174,17 +232,31 @@ const locale = lang === 'es' ? 'es-US' : 'en-US';
       citySelect.appendChild(opt);
     }
 
-    for (const c of data.counties) {
+    for (const county of data.counties) {
       const opt = document.createElement('option');
-      opt.value = c.entityId;
-      opt.textContent = c.name;
-      opt.dataset.countyName = c.name;
+      opt.value = county.entityId;
+      opt.textContent = county.name;
+      opt.dataset.countyName = county.name;
       countySelect.appendChild(opt);
     }
 
     citySelect.disabled = false;
     countySelect.disabled = false;
-    setStatus(t.locationFound(data.places.length, data.counties.length, data.zip));
+    locationFields?.classList.add('is-ready');
+
+    setStatus(
+      tpl(c.tplLocationFound, {
+        places: data.places.length,
+        counties: data.counties.length,
+        zip: data.zip,
+      }),
+      true,
+      false,
+      true,
+    );
+
+    setStepActive(2);
+    updateSubmitState();
 
     if (data.zip !== lastTrackedZip) {
       lastTrackedZip = data.zip;
@@ -197,36 +269,82 @@ const locale = lang === 'es' ? 'es-US' : 'en-US';
     }
   }
 
-  async function lookupZipCode(zip) {
-    setStatus(t.lookingUp);
-    trackEvent('zip_lookup_started', { zip });
-    const res = await fetch(`/api/location/zip?zip=${encodeURIComponent(zip)}`);
-    const data = await res.json();
-    if (!res.ok) {
-      trackEvent('zip_lookup_error', { zip, error_message: data.error ?? 'failed' });
-      throw new Error(data.error ?? t.noZip);
+  async function lookupZipCode(zip, source = 'auto') {
+    if (!/^\d{5}$/.test(zip)) {
+      setStatus(c.zipFirst, true, true);
+      return;
     }
-    fillLocation(data);
+    if (zipLookupInFlight) return;
+    zipLookupInFlight = true;
+    zipLookupBtn.disabled = true;
+    zipLookupBtn.textContent = c.zipLooking;
+    setStatus(c.lookingUp);
+
+    try {
+      trackEvent('zip_lookup_started', { zip, source });
+      const res = await fetch(`/api/location/zip?zip=${encodeURIComponent(zip)}`);
+      const data = await parseJsonResponse(res);
+      if (!res.ok) {
+        trackEvent('zip_lookup_error', { zip, error_message: data.error ?? 'failed' });
+        throw new Error(data.error ?? c.noZip);
+      }
+      fillLocation(data);
+    } catch (err) {
+      lookupCache = null;
+      citySelect.disabled = true;
+      countySelect.disabled = true;
+      locationFields?.classList.remove('is-ready');
+      const message = err instanceof Error ? err.message : c.noZip;
+      setStatus(message, true, true);
+      updateSubmitState();
+    } finally {
+      zipLookupInFlight = false;
+      zipLookupBtn.disabled = false;
+      zipLookupBtn.textContent = c.zipLookupBtn;
+    }
   }
 
-  zipInput.addEventListener('input', () => {
+  function scheduleZipLookup() {
     const zip = zipInput.value.replace(/\D/g, '').slice(0, 5);
     zipInput.value = zip;
     lookupCache = null;
+    locationFields?.classList.remove('is-ready');
+    updateSubmitState();
     if (zip.length !== 5) {
       citySelect.disabled = true;
       countySelect.disabled = true;
       setStatus('', false);
+      setStepActive(1);
       return;
     }
     clearTimeout(zipDebounce);
-    zipDebounce = setTimeout(() => lookupZipCode(zip).catch((e) => setStatus(e.message, true, true)), 400);
+    zipDebounce = setTimeout(() => lookupZipCode(zip, 'debounce'), 350);
+  }
+
+  zipInput.addEventListener('input', scheduleZipLookup);
+  zipInput.addEventListener('blur', () => {
+    const zip = zipInput.value.replace(/\D/g, '').slice(0, 5);
+    if (zip.length === 5 && !lookupCache) lookupZipCode(zip, 'blur');
   });
+  zipInput.addEventListener('paste', () => setTimeout(scheduleZipLookup, 0));
+  zipLookupBtn.addEventListener('click', () => {
+    const zip = zipInput.value.replace(/\D/g, '').slice(0, 5);
+    lookupZipCode(zip, 'button');
+  });
+
+  document.getElementById('annualGrossIncome')?.addEventListener('input', updateSubmitState);
+
+  const zipFromUrl = new URLSearchParams(window.location.search).get('zip')?.replace(/\D/g, '').slice(0, 5);
+  if (zipFromUrl && zipFromUrl.length === 5) {
+    zipInput.value = zipFromUrl;
+    lookupZipCode(zipFromUrl, 'url');
+  }
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     if (!lookupCache) {
-      setStatus(t.zipFirst, true, true);
+      setStatus(c.zipFirst, true, true);
+      zipInput.focus();
       trackEvent('calculate_blocked', { reason: 'no_zip_lookup' });
       return;
     }
@@ -244,6 +362,7 @@ const locale = lang === 'es' ? 'es-US' : 'en-US';
     });
 
     submitBtn.disabled = true;
+    submitBtn.textContent = c.calculating;
     form.classList.add('loading');
     resultsEl.classList.add('hidden');
     placeholderEl.classList.remove('hidden');
@@ -266,8 +385,8 @@ const locale = lang === 'es' ? 'es-US' : 'en-US';
         }),
       });
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? 'Calculation failed');
+      const data = await parseJsonResponse(res);
+      if (!res.ok) throw new Error(data.error ?? c.calcFailed);
 
       const { eligibility, subsidy, incomeLimits, fmr, disclaimer } = data;
       const statusClass = eligibility.status;
@@ -275,21 +394,21 @@ const locale = lang === 'es' ? 'es-US' : 'en-US';
 
       let rentNote = '';
       if (subsidy.actualHap != null) {
-        rentNote = `<p class="rent-note">${t.withRent(formatMoney(subsidy.actualHap))}</p>`;
+        rentNote = `<p class="rent-note">${tpl(c.tplWithRent, { amount: formatMoney(subsidy.actualHap) })}</p>`;
         if (subsidy.rentAboveStandard) {
-          rentNote += `<p class="warn">${t.rentAbove(formatMoney(subsidy.rentAboveStandard))}</p>`;
+          rentNote += `<p class="warn">${tpl(c.tplRentAbove, { amount: formatMoney(subsidy.rentAboveStandard) })}</p>`;
         }
       }
 
       resultsEl.dataset.status = statusClass;
       resultsEl.innerHTML = `
         <p class="result-headline">${headline}</p>
-        <p class="result-area"><strong>${incomeLimits.areaName}</strong> (HUD ${incomeLimits.year}) — ${t.veryLowLimit}: <strong>${formatMoney(eligibility.veryLowLimit)}${t.perYear}</strong></p>
+        <p class="result-area"><strong>${incomeLimits.areaName}</strong> (HUD ${incomeLimits.year}) — ${c.veryLowLimit}: <strong>${formatMoney(eligibility.veryLowLimit)}${c.perYear}</strong></p>
         <div class="stat-grid">
-          <div class="stat"><p class="label">${t.yourShare}</p><p class="value">${formatMoney(subsidy.totalTenantPayment)}${t.perMonth}</p></div>
-          <div class="stat"><p class="label">${t.paymentStandard} (${fmr.bedrooms} BR)</p><p class="value">${formatMoney(subsidy.paymentStandard)}${t.perMonth}</p></div>
-          <div class="stat"><p class="label">${t.maxHelp}</p><p class="value">${formatMoney(subsidy.maxMonthlySubsidy)}${t.perMonth}</p></div>
-          <div class="stat"><p class="label">${t.fmrBasis}</p><p class="value">${formatMoney(fmr.fmrAmount)}${t.perMonth}</p></div>
+          <div class="stat"><p class="label">${c.yourShare}</p><p class="value">${formatMoney(subsidy.totalTenantPayment)}${c.perMonth}</p></div>
+          <div class="stat"><p class="label">${c.paymentStandard} (${fmr.bedrooms} BR)</p><p class="value">${formatMoney(subsidy.paymentStandard)}${c.perMonth}</p></div>
+          <div class="stat"><p class="label">${c.maxHelp}</p><p class="value">${formatMoney(subsidy.maxMonthlySubsidy)}${c.perMonth}</p></div>
+          <div class="stat"><p class="label">${c.fmrBasis}</p><p class="value">${formatMoney(fmr.fmrAmount)}${c.perMonth}</p></div>
         </div>
         ${rentNote}
         <p><small>${disclaimer}</small></p>
@@ -304,25 +423,17 @@ const locale = lang === 'es' ? 'es-US' : 'en-US';
         ttp: subsidy.totalTenantPayment,
       });
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Something went wrong.';
+      const message = err instanceof Error ? err.message : c.calcFailed;
       trackEvent('calculate_error', { zip: lookupCache?.zip ?? '', error_message: message.slice(0, 120) });
       resultsEl.dataset.status = 'error';
       resultsEl.innerHTML = `<p class="result-headline">${message}</p>`;
       showResults();
     } finally {
-      submitBtn.disabled = false;
+      submitBtn.textContent = c.submitLabel;
       form.classList.remove('loading');
+      updateSubmitState();
     }
   });
-</script>
 
-<style>
-  .rent-note {
-    margin: 0.75rem 0 0;
-    font-size: 0.92rem;
-  }
-  .warn {
-    color: var(--color-warning);
-    font-size: 0.9rem;
-  }
-</style>
+  updateSubmitState();
+</script>

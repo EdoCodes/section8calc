@@ -329,6 +329,70 @@ body.bg-mesh {
 }
 
 /* Calculator page (per-diem style) */
+/* Calculator page hero with subtle house silhouettes */
+.calc-hero {
+  position: relative;
+  overflow: hidden;
+  padding: 2.5rem 0 3.5rem;
+  text-align: center;
+  background: linear-gradient(
+    165deg,
+    var(--color-primary-muted) 0%,
+    var(--color-surface) 45%,
+    var(--color-accent-muted) 100%
+  );
+  border-bottom: 1px solid var(--color-border);
+}
+
+.calc-hero__houses {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  color: var(--color-primary);
+}
+
+.calc-hero__house {
+  position: absolute;
+  width: clamp(7rem, 18vw, 11rem);
+  height: auto;
+}
+
+.calc-hero__house--1 {
+  left: 4%;
+  bottom: 8%;
+  opacity: 0.55;
+  transform: rotate(-4deg);
+}
+
+.calc-hero__house--2 {
+  right: 6%;
+  bottom: 12%;
+  width: clamp(8rem, 22vw, 13rem);
+  opacity: 0.45;
+  transform: rotate(3deg);
+}
+
+.calc-hero__house--3 {
+  left: 42%;
+  top: 18%;
+  width: clamp(5rem, 12vw, 8rem);
+  opacity: 0.35;
+}
+
+.calc-hero__content {
+  position: relative;
+  z-index: 1;
+  max-width: 40rem;
+  margin-inline: auto;
+}
+
+.calc-hero__lead {
+  margin: 1rem auto 0;
+  font-size: 1.05rem;
+  color: var(--color-ink-muted);
+  line-height: 1.55;
+}
+
 .calc-page-intro {
   padding: 2rem 0 0.5rem;
   text-align: center;

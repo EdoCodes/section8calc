@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../../../layouts/BaseLayout.astro';
+import CalculatorHero from '../../../components/CalculatorHero.astro';
 import Section8Calculator from '../../../components/Section8Calculator.astro';
 import { calcPath, guidesPath } from '../../../lib/i18n';
 
@@ -26,16 +27,7 @@ const jsonLd = {
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
   </Fragment>
 
-  <section class="calc-page-intro">
-    <div class="container">
-      <p class="calc-step-label">Paso 1 de 3</p>
-      <h1 class="font-display">Estimación Section 8 por ZIP</h1>
-      <p>
-        Búsqueda por código postal, límites de ingreso HUD y Fair Market Rent — los mismos datos que usan las autoridades de vivienda.
-      </p>
-    </div>
-  </section>
-
+  <CalculatorHero lang="es" />
   <Section8Calculator lang="es" />
 
   <section class="container calc-how-it-works" style="padding-bottom: 4rem;">

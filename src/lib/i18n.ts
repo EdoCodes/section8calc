@@ -144,6 +144,103 @@ export function getCalcStrings(lang: Lang): CalcStrings {
   return lang === 'es' ? esCalc : enCalc;
 }
 
+/** JSON-safe strings for calculator client script (`define:vars` cannot pass functions). */
+export type CalcClientStrings = {
+  lang: Lang;
+  locale: string;
+  lookingUp: string;
+  zipFirst: string;
+  noZip: string;
+  zipLookupBtn: string;
+  zipLooking: string;
+  locationReady: string;
+  calculating: string;
+  apiUnavailable: string;
+  calcFailed: string;
+  tplLocationFound: string;
+  tplWithRent: string;
+  tplRentAbove: string;
+  eligible: string;
+  possiblyEligible: string;
+  notEligible: string;
+  yourShare: string;
+  paymentStandard: string;
+  maxHelp: string;
+  fmrBasis: string;
+  perMonth: string;
+  perYear: string;
+  veryLowLimit: string;
+  submitLabel: string;
+};
+
+export function getCalcClientStrings(lang: Lang): CalcClientStrings {
+  const t = getCalcStrings(lang);
+  if (lang === 'es') {
+    return {
+      lang,
+      locale: 'es-US',
+      submitLabel: t.submit,
+      lookingUp: t.lookingUp,
+      zipFirst: t.zipFirst,
+      noZip: t.noZip,
+      zipLookupBtn: 'Buscar área',
+      zipLooking: 'Buscando…',
+      locationReady: 'Área confirmada — complete ingresos y calcule',
+      calculating: 'Calculando…',
+      apiUnavailable:
+        'No se pudo conectar al servidor. Si ve una vista previa estática, use el sitio publicado en Netlify.',
+      calcFailed: 'Error al calcular. Verifique su ZIP e intente de nuevo.',
+      tplLocationFound:
+        'Se encontraron {places} ciudad(es) y {counties} condado(s) para ZIP {zip}. Confirme abajo.',
+      tplWithRent: 'Con la renta ingresada: pago estimado del voucher {amount}/mes.',
+      tplRentAbove: 'La renta supera el estándar de pago en {amount} — usted paga el excedente.',
+      eligible: t.eligible,
+      possiblyEligible: t.possiblyEligible,
+      notEligible: t.notEligible,
+      yourShare: t.yourShare,
+      paymentStandard: t.paymentStandard,
+      maxHelp: t.maxHelp,
+      fmrBasis: t.fmrBasis,
+      perMonth: t.perMonth,
+      perYear: t.perYear,
+      veryLowLimit: t.veryLowLimit,
+    };
+  }
+  return {
+    lang,
+    locale: 'en-US',
+    submitLabel: t.submit,
+    lookingUp: t.lookingUp,
+    zipFirst: t.zipFirst,
+    noZip: t.noZip,
+    zipLookupBtn: 'Find my area',
+    zipLooking: 'Looking up…',
+    locationReady: 'Area confirmed — add income and calculate',
+    calculating: 'Calculating…',
+    apiUnavailable:
+      'Could not reach the calculator API. If you opened a static file preview, use the live Netlify site instead.',
+    calcFailed: 'Calculation failed. Check your ZIP and try again.',
+    tplLocationFound:
+      'Found {places} place(s) and {counties} county option(s) for ZIP {zip}. Confirm below.',
+    tplWithRent: 'With rent entered: estimated voucher payment {amount}/mo.',
+    tplRentAbove: 'Rent is {amount} above the payment standard — you pay that extra.',
+    eligible: t.eligible,
+    possiblyEligible: t.possiblyEligible,
+    notEligible: t.notEligible,
+    yourShare: t.yourShare,
+    paymentStandard: t.paymentStandard,
+    maxHelp: t.maxHelp,
+    fmrBasis: t.fmrBasis,
+    perMonth: t.perMonth,
+    perYear: t.perYear,
+    veryLowLimit: t.veryLowLimit,
+  };
+}
+
+export function formatTpl(template: string, vars: Record<string, string | number>): string {
+  return template.replace(/\{(\w+)\}/g, (_, key) => String(vars[key] ?? ''));
+}
+
 export type SiteStrings = {
   lang: Lang;
   siteName: string;

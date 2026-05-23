@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import CalculatorHero from '../../components/CalculatorHero.astro';
 import Section8Calculator from '../../components/Section8Calculator.astro';
 import { calcPath, guidesPath } from '../../lib/i18n';
 
@@ -25,16 +26,7 @@ const jsonLd = {
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
   </Fragment>
 
-  <section class="calc-page-intro">
-    <div class="container">
-      <p class="calc-step-label">Step 1 of 3</p>
-      <h1 class="font-display">Federal-style Section 8 estimate</h1>
-      <p>
-        ZIP-first lookup, HUD income limits, and Fair Market Rent — the same building blocks housing authorities use for voucher math.
-      </p>
-    </div>
-  </section>
-
+  <CalculatorHero lang="en" />
   <Section8Calculator lang="en" />
 
   <section class="container calc-how-it-works" style="padding-bottom: 4rem;">
