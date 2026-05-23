@@ -1,11 +1,10 @@
 ---
 import { getCollection } from 'astro:content';
-import {
-  calcPath,
-  getHomeStrings,
-  guideSlugPath,
-  type Lang,
-} from '../lib/i18n';
+import CalcHowItWorks from './CalcHowItWorks.astro';
+import CalculatorHero from './CalculatorHero.astro';
+import HomeStateCityDirectory from './HomeStateCityDirectory.astro';
+import Section8Calculator from './Section8Calculator.astro';
+import { getHomeStrings, guideSlugPath, guidesPath, type Lang } from '../lib/i18n';
 
 interface Props {
   lang: Lang;
@@ -17,102 +16,63 @@ const rawGuides =
   lang === 'es'
     ? await getCollection('guides-es', ({ data }) => !data.draft)
     : await getCollection('guides', ({ data }) => !data.draft);
-const guides = rawGuides
-  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
-  .slice(0, 6);
+const guides = rawGuides.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 ---
 
-<section class="home-hero">
-  <div class="container">
-    <p class="home-hero__domain">{h.domain}</p>
-    <h1 class="home-hero__title">
-      {h.heroLine1}
-      <span class="home-hero__accent"> {h.heroAccent} </span>
-      {h.heroLine2}
-    </h1>
-    <p class="home-hero__lead">{h.heroLead}</p>
+<div class="home-page">
+  <CalculatorHero lang={lang} />
 
-    <form class="home-search" action={calcPath(lang)} method="get" id="home-zip-form">
-      <div class="home-search__wrap">
-        <span class="home-search__icon" aria-hidden="true">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="11" cy="11" r="7"></circle>
-            <path d="M20 20l-3-3" stroke-linecap="round"></path>
-          </svg>
-        </span>
-        <input
-          type="text"
-          name="zip"
-          inputmode="numeric"
-          pattern="\d{5}"
-          maxlength="5"
-          placeholder={h.searchPlaceholder}
-          aria-label={h.searchPlaceholder}
-          required
-        />
-        <button type="submit" class="btn btn-primary">{h.searchButton}</button>
-      </div>
-    </form>
+  <div class="home-calculator-band">
+    <Section8Calculator lang={lang} />
   </div>
-</section>
 
-<section class="container home-calc-panel">
-  <ul class="home-calc-grid">
-    {h.tools.map((tool) => (
-      <li>
-        <a class="home-calc-card" href={tool.href}>
-          <span class={`home-calc-card__icon ${tool.iconClass}`} aria-hidden="true">{tool.emoji}</span>
-          <h3>{tool.title}</h3>
-          <p>{tool.subtitle}</p>
-        </a>
-      </li>
-    ))}
-  </ul>
-</section>
+  <CalcHowItWorks lang={lang} />
 
-<section class="container home-feature">
-  <div class="home-feature__grid">
-    <div class="card">
-      <h2 class="home-section-title">{h.featureTitle1}</h2>
-      <ul>
-        {h.featureBody1.map((item) => (
-          <li>{item}</li>
+  {guides.length > 0 && (
+    <section class="container container--wide home-guides" id="guides">
+      <h2 class="home-section-title">{h.guidesTitle}</h2>
+      <div class="guides-grid">
+        {guides.map((guide) => (
+          <a class="guide-card" href={guideSlugPath(lang, guide.id)}>
+            {guide.data.tags[0] && <span class="tag">{guide.data.tags[0]}</span>}
+            <h3>{guide.data.title}</h3>
+            <p>{guide.data.description}</p>
+          </a>
         ))}
-      </ul>
-    </div>
-    <div class="card">
-      <h2 class="home-section-title">{h.featureTitle2}</h2>
-      <p>{h.featureBody2}</p>
-      <p style="margin-top: 1rem;">
-        <a href={h.tools[2].href}>{h.featureLink2}</a>
+      </div>
+      <p class="home-guides__more">
+        <a href={guidesPath(lang)}>{h.allGuides} →</a>
       </p>
-    </div>
-  </div>
-</section>
+    </section>
+  )}
 
-{guides.length > 0 && (
-  <section class="container" style="padding-bottom: 4rem;">
-    <h2 class="home-section-title">{h.guidesTitle}</h2>
-    <div class="guides-grid" style="margin-top: 1rem;">
-      {guides.map((guide) => (
-        <a class="guide-card" href={guideSlugPath(lang, guide.id)}>
-          {guide.data.tags[0] && <span class="tag">{guide.data.tags[0]}</span>}
-          <h2>{guide.data.title}</h2>
-          <p>{guide.data.description}</p>
-        </a>
-      ))}
-    </div>
-  </section>
-)}
+  <HomeStateCityDirectory
+    lang={lang}
+    title={h.searchByCityTitle}
+    filterLabel={h.cityFilterLabel}
+    filterPlaceholder={h.cityFilterPlaceholder}
+    citiesLabel={h.citiesCountLabel}
+  />
+</div>
 
-<script>
-  document.getElementById('home-zip-form')?.addEventListener('submit', (e) => {
-    const form = e.currentTarget as HTMLFormElement;
-    const zip = (new FormData(form).get('zip') as string)?.trim();
-    if (zip && /^\d{5}$/.test(zip)) {
-      e.preventDefault();
-      const base = form.getAttribute('action') || '/calculator/';
-      window.location.href = `${base}?zip=${zip}#section8-calculator`;
-    }
-  });
-</script>
+<style>
+  .home-page :global(.calc-hero) {
+    padding-bottom: 2.5rem;
+  }
+  .home-calculator-band {
+    margin-top: -2rem;
+  }
+  .home-calculator-band :global(.calc-shell) {
+    margin-top: 0;
+  }
+  .home-guides {
+    padding: 2.5rem 0 1rem;
+  }
+  .home-guides .guide-card h3 {
+    font-size: 1.1rem;
+    margin: 0 0 0.5rem;
+  }
+  .home-guides__more {
+    margin: 1.25rem 0 0;
+  }
+</style>

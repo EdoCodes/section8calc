@@ -1,8 +1,9 @@
 ---
 import BaseLayout from '../../../layouts/BaseLayout.astro';
+import CalcHowItWorks from '../../../components/CalcHowItWorks.astro';
 import CalculatorHero from '../../../components/CalculatorHero.astro';
 import Section8Calculator from '../../../components/Section8Calculator.astro';
-import { calcPath, guidesPath } from '../../../lib/i18n';
+import { calcPath } from '../../../lib/i18n';
 
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -27,29 +28,15 @@ const jsonLd = {
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
   </Fragment>
 
-  <CalculatorHero lang="es" />
-  <Section8Calculator lang="es" />
-
-  <section class="container calc-how-it-works" style="padding-bottom: 4rem;">
-    <div class="card">
-      <h2 class="home-section-title">Cómo funciona esta estimación</h2>
-      <ol>
-        <li><strong>ZIP</strong> determina su ciudad y condado.</li>
-        <li><strong>Límites HUD</strong> verifican elegibilidad de ingreso muy bajo / bajo.</li>
-        <li><strong>Fair Market Rent</strong> define el estándar de pago (usamos 100% FMR salvo que su PHA publique otro valor).</li>
-        <li><strong>Total Tenant Payment (TTP)</strong> es el mayor entre 30% del ingreso ajustado, 10% del bruto o mínimo de la PHA.</li>
-        <li><strong>Subvención máxima</strong> = estándar de pago menos su pago como inquilino.</li>
-      </ol>
-      <p>
-        Lea <a href={`${guidesPath('es')}how-section-8-housing-works/`}>cómo funciona Section 8</a> o
-        <a href={`${guidesPath('es')}section-8-income-limits-explained/`}>límites de ingreso explicados</a>.
-      </p>
-    </div>
-  </section>
+  <div class="calc-page-wide">
+    <CalculatorHero lang="es" />
+    <Section8Calculator lang="es" />
+  </div>
+  <CalcHowItWorks lang="es" />
 </BaseLayout>
 
 <style>
-  .calc-how-it-works {
-    margin-top: 2rem;
+  .calc-page-wide :global(.calc-shell) {
+    margin-top: -2rem;
   }
 </style>

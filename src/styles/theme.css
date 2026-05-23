@@ -420,6 +420,23 @@ body.bg-mesh {
   margin-bottom: 0.5rem;
 }
 
+.container--wide {
+  width: min(100% - 2rem, 88rem);
+  margin-inline: auto;
+}
+
+.calc-how-it-works {
+  margin-top: 1.5rem;
+  padding-bottom: 2.5rem;
+}
+
+@media (min-width: 1100px) {
+  .container--wide.calc-layout {
+    grid-template-columns: minmax(0, 1.2fr) minmax(300px, 380px);
+    gap: 1.5rem;
+  }
+}
+
 .page-hero {
   padding: 2rem 0 1.5rem;
 }

@@ -14,7 +14,7 @@
 
 @media (min-width: 1024px) {
   .calc-layout {
-    grid-template-columns: minmax(0, 1fr) minmax(280px, 340px);
+    grid-template-columns: minmax(0, 1fr) minmax(300px, 380px);
     align-items: start;
   }
 }

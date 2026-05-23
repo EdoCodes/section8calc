@@ -1,0 +1,63 @@
+---
+import { guidesPath, type Lang } from '../lib/i18n';
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = 'en' } = Astro.props;
+const guides = guidesPath(lang);
+
+const copy =
+  lang === 'es'
+    ? {
+        title: 'Cómo funciona esta estimación',
+        steps: [
+          { label: 'ZIP', text: 'determina su ciudad y condado (geografía Census/FCC).' },
+          { label: 'Límites HUD', text: 'verifican elegibilidad de ingreso muy bajo / bajo.' },
+          { label: 'Fair Market Rent', text: 'define el estándar de pago (usamos 100% FMR salvo que su PHA publique otro valor).' },
+          { label: 'Total Tenant Payment', text: 'es el mayor entre 30% del ingreso ajustado, 10% del bruto o mínimo de la PHA.' },
+          { label: 'Subvención máxima', text: '= estándar de pago menos su pago como inquilino.' },
+        ],
+        link1: 'cómo funciona Section 8',
+        link1href: `${guides}how-section-8-housing-works/`,
+        link2: 'límites de ingreso explicados',
+        link2href: `${guides}section-8-income-limits-explained/`,
+        readMore: 'Lea más en nuestra guía',
+        or: 'o',
+      }
+    : {
+        title: 'How this estimate works',
+        steps: [
+          { label: 'ZIP', text: 'resolves your city and county (Census/FCC geography).' },
+          { label: 'HUD income limits', text: 'determine very low / low income eligibility.' },
+          { label: 'Fair Market Rent', text: 'sets the payment standard (we use 100% FMR unless your PHA publishes otherwise).' },
+          { label: 'Total Tenant Payment', text: 'is the greater of 30% of adjusted income, 10% of gross income, or $50 minimum.' },
+          { label: 'Maximum subsidy', text: '= payment standard minus your tenant payment.' },
+        ],
+        link1: 'how Section 8 works',
+        link1href: `${guides}how-section-8-housing-works/`,
+        link2: 'income limits explained',
+        link2href: `${guides}section-8-income-limits-explained/`,
+        readMore: 'Read more in our',
+        or: 'or',
+      };
+---
+
+<section class="container container--wide calc-how-it-works" id="how-it-works">
+  <div class="card">
+    <h2 class="home-section-title">{copy.title}</h2>
+    <ol>
+      {copy.steps.map((step) => (
+        <li>
+          <strong>{step.label}</strong> {step.text}
+        </li>
+      ))}
+    </ol>
+    <p>
+      {copy.readMore}{' '}
+      <a href={copy.link1href}>{copy.link1}</a> {copy.or}{' '}
+      <a href={copy.link2href}>{copy.link2}</a>.
+    </p>
+  </div>
+</section>

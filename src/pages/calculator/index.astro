@@ -1,8 +1,9 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import CalcHowItWorks from '../../components/CalcHowItWorks.astro';
 import CalculatorHero from '../../components/CalculatorHero.astro';
 import Section8Calculator from '../../components/Section8Calculator.astro';
-import { calcPath, guidesPath } from '../../lib/i18n';
+import { calcPath } from '../../lib/i18n';
 
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -26,29 +27,15 @@ const jsonLd = {
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
   </Fragment>
 
-  <CalculatorHero lang="en" />
-  <Section8Calculator lang="en" />
-
-  <section class="container calc-how-it-works" style="padding-bottom: 4rem;">
-    <div class="card">
-      <h2 class="home-section-title">How this estimate works</h2>
-      <ol>
-        <li><strong>ZIP</strong> resolves your city and county (Census/FCC geography).</li>
-        <li><strong>HUD income limits</strong> determine very low / low income eligibility.</li>
-        <li><strong>Fair Market Rent</strong> sets the payment standard (we use 100% FMR unless your PHA publishes otherwise).</li>
-        <li><strong>Total Tenant Payment</strong> is the greater of 30% of adjusted income, 10% of gross income, or $50 minimum.</li>
-        <li><strong>Maximum subsidy</strong> = payment standard minus your tenant payment.</li>
-      </ol>
-      <p>
-        Read more in our <a href={`${guidesPath('en')}how-section-8-housing-works/`}>how Section 8 works</a> guide or
-        <a href={`${guidesPath('en')}section-8-income-limits-explained/`}>income limits explained</a>.
-      </p>
-    </div>
-  </section>
+  <div class="calc-page-wide">
+    <CalculatorHero lang="en" />
+    <Section8Calculator lang="en" />
+  </div>
+  <CalcHowItWorks lang="en" />
 </BaseLayout>
 
 <style>
-  .calc-how-it-works {
-    margin-top: 2rem;
+  .calc-page-wide :global(.calc-shell) {
+    margin-top: -2rem;
   }
 </style>

@@ -295,86 +295,33 @@ export function getSiteStrings(lang: Lang): SiteStrings {
 }
 
 export type HomeStrings = {
-  domain: string;
-  heroLine1: string;
-  heroAccent: string;
-  heroLine2: string;
-  heroLead: string;
-  searchPlaceholder: string;
-  searchButton: string;
-  tools: { href: string; title: string; subtitle: string; iconClass: string; emoji: string }[];
-  featureTitle1: string;
-  featureBody1: string[];
-  featureTitle2: string;
-  featureBody2: string;
-  featureLink2: string;
   guidesTitle: string;
   allGuides: string;
+  searchByCityTitle: string;
+  cityFilterLabel: string;
+  cityFilterPlaceholder: string;
+  citiesCountLabel: (count: number) => string;
 };
 
 export function getHomeStrings(lang: Lang): HomeStrings {
-  const calc = calcPath(lang);
-  const cities = citiesPath(lang);
-  const guides = guidesPath(lang);
+  const locale = lang === 'es' ? 'es-US' : 'en-US';
   if (lang === 'es') {
     return {
-      domain: 'section8calculator.com',
-      heroLine1: 'Su estimación Section 8 en',
-      heroAccent: '3',
-      heroLine2: 'pasos gratuitos',
-      heroLead:
-        'Ingrese su ZIP, confirme ciudad y condado, y vea límites de ingreso HUD y ayuda estimada del voucher — los mismos datos que usan las autoridades de vivienda.',
-      searchPlaceholder: 'Ingrese código postal (ZIP)',
-      searchButton: 'Calcular',
-      tools: [
-        { href: calc, title: 'Calculadora principal', subtitle: 'ZIP y elegibilidad', iconClass: 'home-calc-card__icon--orange', emoji: '🏠' },
-        { href: cities, title: 'Por ciudad', subtitle: '31,000+ lugares', iconClass: 'home-calc-card__icon--navy', emoji: '🗺️' },
-        { href: guides, title: 'Guías', subtitle: 'Vouchers y listas', iconClass: 'home-calc-card__icon--teal', emoji: '📘' },
-        { href: `${calc}#section8-calculator`, title: 'Límites de ingreso', subtitle: 'Datos HUD', iconClass: 'home-calc-card__icon--slate', emoji: '📊' },
-      ],
-      featureTitle1: 'Para inquilinos y buscadores',
-      featureBody1: [
-        'Búsqueda por ZIP con ciudad y condado confirmados',
-        'Verificación de límites de ingreso muy bajo y bajo',
-        'Estimación de su parte y subvención máxima del voucher',
-        'Renta opcional para ver pagos sobre el estándar',
-      ],
-      featureTitle2: 'Guías en español',
-      featureBody2:
-        'Artículos sobre solicitudes Section 8, listas de espera, límites de ingreso y estándares de pago — cada uno enlaza a la calculadora.',
-      featureLink2: 'Ver todas las guías →',
       guidesTitle: 'Guías populares Section 8',
-      allGuides: 'Todas las guías',
+      allGuides: 'Ver todas las guías',
+      searchByCityTitle: 'Buscar por ciudad',
+      cityFilterLabel: 'Filtrar ciudades o estados',
+      cityFilterPlaceholder: 'Ej. Torrance, California, TX…',
+      citiesCountLabel: (count) => `${count.toLocaleString(locale)} lugares`,
     };
   }
   return {
-    domain: 'section8calculator.com',
-    heroLine1: 'Your Section 8 estimate in',
-    heroAccent: '3',
-    heroLine2: 'free steps',
-    heroLead:
-      'Enter your ZIP, confirm city and county, and see HUD income limits and estimated voucher help — the same data housing authorities use.',
-    searchPlaceholder: 'Enter ZIP code',
-    searchButton: 'Calculate',
-    tools: [
-      { href: calc, title: 'Main calculator', subtitle: 'ZIP & eligibility', iconClass: 'home-calc-card__icon--orange', emoji: '🏠' },
-      { href: cities, title: 'By city', subtitle: '31,000+ places', iconClass: 'home-calc-card__icon--navy', emoji: '🗺️' },
-      { href: guides, title: 'Guides', subtitle: 'Vouchers & waiting lists', iconClass: 'home-calc-card__icon--teal', emoji: '📘' },
-      { href: `${calc}#section8-calculator`, title: 'Income limits', subtitle: 'HUD data', iconClass: 'home-calc-card__icon--slate', emoji: '📊' },
-    ],
-    featureTitle1: 'Built for searchers & renters',
-    featureBody1: [
-      'ZIP-first lookup fills city and county dropdowns',
-      'Very low & low income limit checks by household size',
-      'Estimated tenant share and maximum voucher subsidy',
-      'Optional rent input to see payment above the standard',
-    ],
-    featureTitle2: 'Housing guides hub',
-    featureBody2:
-      'Guides on Section 8 applications, waiting lists, income limits, and payment standards — each links to the calculator.',
-    featureLink2: 'Browse all guides →',
     guidesTitle: 'Popular Section 8 guides',
-    allGuides: 'All guides',
+    allGuides: 'Browse all guides',
+    searchByCityTitle: 'Search by city',
+    cityFilterLabel: 'Filter cities or states',
+    cityFilterPlaceholder: 'e.g. Torrance, California, TX…',
+    citiesCountLabel: (count) => `${count.toLocaleString(locale)} cities`,
   };
 }
 
