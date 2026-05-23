@@ -16,6 +16,12 @@ export function initSection8Calculator(c: CalcClientStrings) {
   const submitHint = document.getElementById('calc-submit-hint');
   const stepsEl = document.getElementById('calc-steps');
   const resultsSidebar = document.getElementById('calc-results-sidebar');
+  const householdSizeEl = document.getElementById('householdSize') as HTMLSelectElement | null;
+  const incomeExampleEl = document.getElementById('income-example-hint');
+  const resultActionsEl = document.getElementById('calc-result-actions');
+  const printBtn = document.getElementById('calc-print-btn');
+  const pdfBtn = document.getElementById('calc-pdf-btn');
+  const pdfHintEl = document.getElementById('calc-pdf-hint');
 
   if (
     !root ||
@@ -34,10 +40,16 @@ export function initSection8Calculator(c: CalcClientStrings) {
     return;
   }
 
-  const labels: Record<string, string> = {
-    eligible: c.eligible,
-    possibly_eligible: c.possiblyEligible,
-    not_eligible: c.notEligible,
+  const plainHeadlines: Record<string, string> = {
+    eligible: c.eligiblePlain,
+    possibly_eligible: c.possiblyEligiblePlain,
+    not_eligible: c.notEligiblePlain,
+  };
+
+  const trafficLabels: Record<string, string> = {
+    eligible: c.trafficGood,
+    possibly_eligible: c.trafficMaybe,
+    not_eligible: c.trafficUnlikely,
   };
 
   let lookupCache: {
@@ -93,12 +105,50 @@ export function initSection8Calculator(c: CalcClientStrings) {
     }
   }
 
-  function showResults() {
+  function showResults(showActions = false) {
     placeholderEl.classList.add('hidden');
     resultsEl.classList.remove('hidden');
     setStepActive(3);
+    resultActionsEl?.classList.toggle('hidden', !showActions);
     resultsSidebar?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
+
+  function updateIncomeExample() {
+    if (!householdSizeEl || !incomeExampleEl) return;
+    const hint = c.incomeExamples[householdSizeEl.value];
+    incomeExampleEl.textContent = hint ?? '';
+    incomeExampleEl.classList.toggle('hidden', !hint);
+  }
+
+  function trafficBadgeHtml(statusClass: string) {
+    const label = trafficLabels[statusClass];
+    if (!label) return '';
+    return `
+      <div class="result-traffic result-traffic--${statusClass}" role="status">
+        <span class="result-traffic__dot" aria-hidden="true"></span>
+        <span class="result-traffic__label">${label}</span>
+      </div>`;
+  }
+
+  function printResults(showPdfHint = false) {
+    const prevTitle = document.title;
+    document.title = c.printTitle;
+    document.body.classList.add('calc-print-mode');
+    if (showPdfHint) pdfHintEl?.classList.remove('hidden');
+    const cleanup = () => {
+      document.body.classList.remove('calc-print-mode');
+      document.title = prevTitle;
+      pdfHintEl?.classList.add('hidden');
+    };
+    window.addEventListener('afterprint', cleanup, { once: true });
+    window.print();
+  }
+
+  householdSizeEl?.addEventListener('change', updateIncomeExample);
+  updateIncomeExample();
+
+  printBtn?.addEventListener('click', () => printResults(false));
+  pdfBtn?.addEventListener('click', () => printResults(true));
 
   async function parseJsonResponse(res: Response) {
     const text = await res.text();
@@ -263,6 +313,7 @@ export function initSection8Calculator(c: CalcClientStrings) {
     form.classList.add('loading');
     resultsEl.classList.add('hidden');
     placeholderEl.classList.remove('hidden');
+    resultActionsEl?.classList.add('hidden');
 
     try {
       const res = await fetch('/api/calculate', {
@@ -302,7 +353,9 @@ export function initSection8Calculator(c: CalcClientStrings) {
       const disclaimer = String(data.disclaimer ?? '');
 
       const statusClass = eligibility.status;
-      const headline = labels[statusClass] ?? eligibility.label;
+      const headline = plainHeadlines[statusClass] ?? eligibility.label;
+      const trafficHtml = trafficBadgeHtml(statusClass);
+      const ttpAmount = formatMoney(subsidy.totalTenantPayment);
 
       let rentNote = '';
       if (subsidy.actualHap != null) {
@@ -314,18 +367,45 @@ export function initSection8Calculator(c: CalcClientStrings) {
 
       resultsEl.dataset.status = statusClass;
       resultsEl.innerHTML = `
-        <p class="result-headline">${headline}</p>
-        <p class="result-area"><strong>${incomeLimits.areaName}</strong> (HUD ${incomeLimits.year}) — ${c.veryLowLimit}: <strong>${formatMoney(eligibility.veryLowLimit)}${c.perYear}</strong></p>
-        <div class="stat-grid">
-          <div class="stat"><p class="label">${c.yourShare}</p><p class="value">${formatMoney(subsidy.totalTenantPayment)}${c.perMonth}</p></div>
-          <div class="stat"><p class="label">${c.paymentStandard} (${fmr.bedrooms} BR)</p><p class="value">${formatMoney(subsidy.paymentStandard)}${c.perMonth}</p></div>
-          <div class="stat"><p class="label">${c.maxHelp}</p><p class="value">${formatMoney(subsidy.maxMonthlySubsidy)}${c.perMonth}</p></div>
-          <div class="stat"><p class="label">${c.fmrBasis}</p><p class="value">${formatMoney(fmr.fmrAmount)}${c.perMonth}</p></div>
+        <div class="result-ttp-hero" role="region" aria-label="${c.yourSharePlain}">
+          <span class="result-ttp-hero__badge">${c.ttpFocusBadge}</span>
+          <p class="result-ttp-hero__label">${c.yourSharePlain}</p>
+          <p class="result-ttp-hero__value">${ttpAmount}<span class="result-ttp-hero__per">${c.perMonth}</span></p>
+          <p class="result-ttp-hero__hint">${c.yourShareHint}</p>
+          <p class="result-ttp-hero__abbr"><abbr title="Total Tenant Payment">TTP</abbr> · ${c.yourShare}</p>
         </div>
+        ${trafficHtml}
+        <p class="result-headline">${headline}</p>
+        <p class="result-area">${c.incomeLimitPlain}: <strong>${formatMoney(eligibility.veryLowLimit)}${c.perYear}</strong><br /><span class="result-area__place">${incomeLimits.areaName} (HUD ${incomeLimits.year})</span></p>
+        <div class="result-next-steps">
+          <h4 class="result-next-steps__title">${c.nextStepsTitle}</h4>
+          <p class="result-next-steps__lead">${c.nextStepsLead}</p>
+          <a class="result-next-steps__link" href="${c.nextStepsHref}">${c.nextStepsLink}</a>
+        </div>
+        <details class="result-details">
+          <summary>${c.detailsSummary}</summary>
+          <div class="stat-grid stat-grid--secondary">
+            <div class="stat">
+              <p class="label">${c.maxHelpPlain}</p>
+              <p class="value">${formatMoney(subsidy.maxMonthlySubsidy)}${c.perMonth}</p>
+              <p class="stat-hint">${c.maxHelpHint}</p>
+            </div>
+            <div class="stat">
+              <p class="label">${c.paymentStandardPlain} (${fmr.bedrooms} BR)</p>
+              <p class="value">${formatMoney(subsidy.paymentStandard)}${c.perMonth}</p>
+              <p class="stat-hint">${c.paymentStandardHint}</p>
+            </div>
+            <div class="stat">
+              <p class="label">${c.fmrBasisPlain}</p>
+              <p class="value">${formatMoney(fmr.fmrAmount)}${c.perMonth}</p>
+              <p class="stat-hint">${c.fmrBasisHint}</p>
+            </div>
+          </div>
+        </details>
         ${rentNote}
-        <p><small>${disclaimer}</small></p>
+        <p class="result-disclaimer"><small>${disclaimer}</small></p>
       `;
-      showResults();
+      showResults(true);
 
       trackEvent('calculate_success', {
         zip: lookupCache.zip,
@@ -339,7 +419,7 @@ export function initSection8Calculator(c: CalcClientStrings) {
       trackEvent('calculate_error', { zip: lookupCache?.zip ?? '', error_message: message.slice(0, 120) });
       resultsEl.dataset.status = 'error';
       resultsEl.innerHTML = `<p class="result-headline">${message}</p>`;
-      showResults();
+      showResults(false);
     } finally {
       submitBtn.textContent = c.submitLabel;
       form.classList.remove('loading');

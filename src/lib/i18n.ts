@@ -19,6 +19,7 @@ export type CalcStrings = {
   studio: string;
   br: string;
   annualIncome: string;
+  annualIncomeHint: string;
   deductions: string;
   deductionsHint: string;
   optional: string;
@@ -32,9 +33,20 @@ export type CalcStrings = {
   resultsTitle: string;
   resultsPlaceholder: string;
   yourShare: string;
+  yourSharePlain: string;
+  yourShareHint: string;
   paymentStandard: string;
+  paymentStandardPlain: string;
+  paymentStandardHint: string;
   maxHelp: string;
+  maxHelpPlain: string;
+  maxHelpHint: string;
   fmrBasis: string;
+  fmrBasisPlain: string;
+  fmrBasisHint: string;
+  ttpFocusBadge: string;
+  detailsSummary: string;
+  incomeLimitPlain: string;
   perMonth: string;
   perYear: string;
   veryLowLimit: string;
@@ -63,7 +75,8 @@ const enCalc: CalcStrings = {
   bedrooms: 'Bedrooms on voucher',
   studio: 'Studio',
   br: 'bedroom',
-  annualIncome: 'Annual gross household income',
+  annualIncome: 'Annual household income (before taxes)',
+  annualIncomeHint: 'Add up income for everyone who will be on the lease — wages, benefits, etc.',
   deductions: 'Annual income deductions',
   deductionsHint: 'Elderly/disabled, childcare, medical — per PHA rules.',
   optional: 'optional',
@@ -78,9 +91,20 @@ const enCalc: CalcStrings = {
   resultsTitle: 'Your results',
   resultsPlaceholder: 'Complete the form and calculate to see eligibility, income limits, and estimated voucher help.',
   yourShare: 'Your share (TTP)',
+  yourSharePlain: 'What you pay each month',
+  yourShareHint: 'Your minimum rent share (TTP) — often about 30% of adjusted income, before utilities.',
   paymentStandard: 'Payment standard',
+  paymentStandardPlain: 'Rent limit the voucher uses',
+  paymentStandardHint: 'Based on HUD Fair Market Rent for your bedroom size.',
   maxHelp: 'Max voucher help',
+  maxHelpPlain: 'Voucher may pay up to',
+  maxHelpHint: 'Before you choose a unit — actual amount depends on rent and income.',
   fmrBasis: 'FMR basis',
+  fmrBasisPlain: 'HUD rent benchmark',
+  fmrBasisHint: 'Fair Market Rent for the area and bedroom count.',
+  ttpFocusBadge: 'Focus here',
+  detailsSummary: 'See all numbers (payment standard, voucher help, HUD rent)',
+  incomeLimitPlain: 'Income limit for your household size',
   perMonth: '/mo',
   perYear: '/yr',
   veryLowLimit: 'Very low income limit for your household',
@@ -110,7 +134,8 @@ const esCalc: CalcStrings = {
   bedrooms: 'Recámaras en el voucher',
   studio: 'Estudio',
   br: 'recámara',
-  annualIncome: 'Ingreso bruto anual del hogar',
+  annualIncome: 'Ingreso anual del hogar (antes de impuestos)',
+  annualIncomeHint: 'Sume el ingreso de quienes vivirán en la unidad — salarios, beneficios, etc.',
   deductions: 'Deducciones de ingreso anuales',
   deductionsHint: 'Adulto mayor/discapacidad, cuidado infantil, médicos — según reglas de la PHA.',
   optional: 'opcional',
@@ -126,9 +151,20 @@ const esCalc: CalcStrings = {
   resultsPlaceholder:
     'Complete el formulario para ver elegibilidad, límites de ingreso y ayuda estimada del voucher.',
   yourShare: 'Su parte (TTP)',
+  yourSharePlain: 'Lo que usted paga al mes',
+  yourShareHint: 'Su parte mínima de renta (TTP) — a menudo cerca del 30% del ingreso ajustado, antes de servicios.',
   paymentStandard: 'Estándar de pago',
+  paymentStandardPlain: 'Límite de renta del voucher',
+  paymentStandardHint: 'Basado en Fair Market Rent de HUD para su tamaño de unidad.',
   maxHelp: 'Ayuda máxima del voucher',
+  maxHelpPlain: 'El voucher puede pagar hasta',
+  maxHelpHint: 'Antes de elegir unidad — el monto real depende de renta e ingreso.',
   fmrBasis: 'Base FMR',
+  fmrBasisPlain: 'Referencia de renta HUD',
+  fmrBasisHint: 'Fair Market Rent del área y número de recámaras.',
+  ttpFocusBadge: 'Número principal',
+  detailsSummary: 'Ver todos los números (estándar de pago, ayuda, renta HUD)',
+  incomeLimitPlain: 'Límite de ingreso para su tamaño de hogar',
   perMonth: '/mes',
   perYear: '/año',
   veryLowLimit: 'Límite de ingreso muy bajo para su hogar',
@@ -164,17 +200,71 @@ export type CalcClientStrings = {
   possiblyEligible: string;
   notEligible: string;
   yourShare: string;
+  yourSharePlain: string;
+  yourShareHint: string;
   paymentStandard: string;
+  paymentStandardPlain: string;
+  paymentStandardHint: string;
   maxHelp: string;
+  maxHelpPlain: string;
+  maxHelpHint: string;
   fmrBasis: string;
+  fmrBasisPlain: string;
+  fmrBasisHint: string;
+  ttpFocusBadge: string;
+  detailsSummary: string;
+  incomeLimitPlain: string;
   perMonth: string;
   perYear: string;
   veryLowLimit: string;
   submitLabel: string;
+  eligiblePlain: string;
+  possiblyEligiblePlain: string;
+  notEligiblePlain: string;
+  trafficGood: string;
+  trafficMaybe: string;
+  trafficUnlikely: string;
+  incomeExamples: Record<string, string>;
+  nextStepsTitle: string;
+  nextStepsLead: string;
+  nextStepsLink: string;
+  nextStepsHref: string;
+  printResults: string;
+  savePdf: string;
+  savePdfHint: string;
+  printTitle: string;
 };
+
+const INCOME_EXAMPLE_AMOUNTS: Record<number, number> = {
+  1: 18_000,
+  2: 24_000,
+  3: 28_000,
+  4: 34_000,
+  5: 40_000,
+  6: 46_000,
+  7: 52_000,
+  8: 58_000,
+};
+
+function buildIncomeExamples(lang: Lang): Record<string, string> {
+  const locale = lang === 'es' ? 'es-US' : 'en-US';
+  const fmt = (n: number) =>
+    n.toLocaleString(locale, { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
+  const out: Record<string, string> = {};
+  for (let size = 1; size <= 8; size++) {
+    const amount = fmt(INCOME_EXAMPLE_AMOUNTS[size] ?? 30_000);
+    out[String(size)] =
+      lang === 'es'
+        ? `Ej. ${amount}/año para ${size} ${size === 1 ? 'persona' : 'personas'} (solo referencia)`
+        : `e.g. ${amount}/year for ${size} ${size === 1 ? 'person' : 'people'} (example only)`;
+  }
+  return out;
+}
 
 export function getCalcClientStrings(lang: Lang): CalcClientStrings {
   const t = getCalcStrings(lang);
+  const nextHref = `${guidesPath(lang)}how-to-apply-section-8-waiting-list/`;
+  const incomeExamples = buildIncomeExamples(lang);
   if (lang === 'es') {
     return {
       lang,
@@ -198,12 +288,38 @@ export function getCalcClientStrings(lang: Lang): CalcClientStrings {
       possiblyEligible: t.possiblyEligible,
       notEligible: t.notEligible,
       yourShare: t.yourShare,
+      yourSharePlain: t.yourSharePlain,
+      yourShareHint: t.yourShareHint,
       paymentStandard: t.paymentStandard,
+      paymentStandardPlain: t.paymentStandardPlain,
+      paymentStandardHint: t.paymentStandardHint,
       maxHelp: t.maxHelp,
+      maxHelpPlain: t.maxHelpPlain,
+      maxHelpHint: t.maxHelpHint,
       fmrBasis: t.fmrBasis,
+      fmrBasisPlain: t.fmrBasisPlain,
+      fmrBasisHint: t.fmrBasisHint,
+      ttpFocusBadge: t.ttpFocusBadge,
+      detailsSummary: t.detailsSummary,
+      incomeLimitPlain: t.incomeLimitPlain,
       perMonth: t.perMonth,
       perYear: t.perYear,
       veryLowLimit: t.veryLowLimit,
+      eligiblePlain: 'Es probable que califique según los límites de ingreso HUD.',
+      possiblyEligiblePlain: 'Podría calificar — su ingreso está en el rango bajo; la PHA local decide.',
+      notEligiblePlain: 'Su ingreso parece estar por encima de los límites HUD para esta área.',
+      trafficGood: 'Buena probabilidad',
+      trafficMaybe: 'Tal vez',
+      trafficUnlikely: 'Poco probable',
+      incomeExamples,
+      nextStepsTitle: '¿Qué sigue?',
+      nextStepsLead: 'Esta herramienta no acepta solicitudes. Debe contactar a su Autoridad de Vivienda Pública (PHA) local.',
+      nextStepsLink: 'Cómo solicitar y listas de espera →',
+      nextStepsHref: nextHref,
+      printResults: 'Imprimir resultados',
+      savePdf: 'Guardar como PDF',
+      savePdfHint: 'Abre el diálogo de impresión — elija «Guardar como PDF».',
+      printTitle: 'Estimación Section 8',
     };
   }
   return {
@@ -228,12 +344,39 @@ export function getCalcClientStrings(lang: Lang): CalcClientStrings {
     possiblyEligible: t.possiblyEligible,
     notEligible: t.notEligible,
     yourShare: t.yourShare,
+    yourSharePlain: t.yourSharePlain,
+    yourShareHint: t.yourShareHint,
     paymentStandard: t.paymentStandard,
+    paymentStandardPlain: t.paymentStandardPlain,
+    paymentStandardHint: t.paymentStandardHint,
     maxHelp: t.maxHelp,
+    maxHelpPlain: t.maxHelpPlain,
+    maxHelpHint: t.maxHelpHint,
     fmrBasis: t.fmrBasis,
+    fmrBasisPlain: t.fmrBasisPlain,
+    fmrBasisHint: t.fmrBasisHint,
+    ttpFocusBadge: t.ttpFocusBadge,
+    detailsSummary: t.detailsSummary,
+    incomeLimitPlain: t.incomeLimitPlain,
     perMonth: t.perMonth,
     perYear: t.perYear,
     veryLowLimit: t.veryLowLimit,
+    eligiblePlain: 'You likely meet HUD income limits for this area.',
+    possiblyEligiblePlain: 'You may qualify — income is in the low range; your local PHA makes the final call.',
+    notEligiblePlain: 'Your income appears above HUD limits for this area.',
+    trafficGood: 'Good chance',
+    trafficMaybe: 'Maybe',
+    trafficUnlikely: 'Unlikely',
+    incomeExamples,
+    nextStepsTitle: 'What happens next?',
+    nextStepsLead:
+      'This tool does not accept applications. You must apply through your local Public Housing Authority (PHA).',
+    nextStepsLink: 'How to apply & waiting lists →',
+    nextStepsHref: nextHref,
+    printResults: 'Print results',
+    savePdf: 'Save as PDF',
+    savePdfHint: 'Opens print dialog — choose “Save as PDF” as the destination.',
+    printTitle: 'Section 8 estimate',
   };
 }
 

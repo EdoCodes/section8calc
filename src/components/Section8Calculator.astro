@@ -104,6 +104,8 @@ const c = getCalcClientStrings(lang);
             <div class="form-field">
               <label for="annualGrossIncome">{t.annualIncome} ($)</label>
               <input id="annualGrossIncome" name="annualGrossIncome" type="number" min="0" step="100" placeholder="28000" required />
+              <small>{t.annualIncomeHint}</small>
+              <small id="income-example-hint" class="income-example-hint"></small>
             </div>
             <div class="form-field">
               <label for="annualDeductions">{t.deductions} ($) <small>({t.optional})</small></label>
@@ -132,6 +134,11 @@ const c = getCalcClientStrings(lang);
         <p class="placeholder">{t.resultsPlaceholder}</p>
       </div>
       <div id="calc-results" class="hidden"></div>
+      <div id="calc-result-actions" class="calc-result-actions hidden">
+        <button type="button" class="btn btn-secondary btn-sm" id="calc-print-btn">{c.printResults}</button>
+        <button type="button" class="btn btn-secondary btn-sm" id="calc-pdf-btn">{c.savePdf}</button>
+        <p class="calc-pdf-hint hidden" id="calc-pdf-hint">{c.savePdfHint}</p>
+      </div>
     </aside>
   </div>
 </section>
