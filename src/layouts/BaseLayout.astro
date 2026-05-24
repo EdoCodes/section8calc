@@ -19,6 +19,8 @@ interface Props {
   canonicalPath?: string;
   ogType?: 'website' | 'article';
   lang?: Lang;
+  /** Extra class on body (e.g. page-home for landing UX scale). */
+  bodyClass?: string;
 }
 
 const {
@@ -27,6 +29,7 @@ const {
   canonicalPath = Astro.url.pathname,
   ogType = 'website',
   lang = 'en',
+  bodyClass = '',
 } = Astro.props;
 
 const s = getSiteStrings(lang);
@@ -62,7 +65,7 @@ const logoMark = lang === 'es' ? 'S8' : 'S8';
     <GoogleAnalytics />
     <slot name="head" />
   </head>
-  <body class="bg-mesh">
+  <body class:list={['bg-mesh', bodyClass]}>
     <header class="site-header site-header--glass">
       <div class="container inner">
         <a class="site-logo" href={homePath(lang)}>
