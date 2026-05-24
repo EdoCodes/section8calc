@@ -17,14 +17,12 @@ body.page-home .site-header--glass .inner {
 }
 
 body.page-home .site-logo__mark {
-  width: 2.85rem;
-  height: 2.85rem;
-  font-size: 0.95rem;
-  border-radius: 0.85rem;
+  width: 3.25rem;
+  height: 3.25rem;
 }
 
 body.page-home .site-logo__name {
-  font-size: 1.125rem;
+  font-size: 1.3rem;
 }
 
 body.page-home .site-logo__tagline {
