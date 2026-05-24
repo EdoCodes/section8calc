@@ -48,11 +48,26 @@ body.page-home .lang-switch {
 
 /* —— Hero (calculator band) —— */
 body.page-home .calc-hero {
-  padding: 2.75rem 0 3.75rem;
+  padding: 1rem 0 1.75rem;
 }
 
-body.page-home .calc-hero__content .font-display {
-  font-size: clamp(2.15rem, 5.5vw, 3.5rem);
+body.page-home .calc-hero__content {
+  max-width: 52rem;
+}
+
+body.page-home .calc-hero__title {
+  white-space: nowrap;
+  font-size: clamp(1.15rem, 4.25vw, 3.35rem);
+  line-height: 1.12;
+  margin: 0;
+}
+
+html[lang='es'] body.page-home .calc-hero__title {
+  font-size: clamp(1rem, 3.5vw, 3.1rem);
+}
+
+body.page-home .home-calculator-band :global(.calc-shell) {
+  margin-top: 0;
 }
 
 body.page-home .calc-hero__lead {
@@ -135,6 +150,74 @@ body.page-home .zip-lookup-btn {
 
 body.page-home .calc-fieldset--zip {
   padding: 1.25rem 1.3rem 1.3rem;
+  border: 2px solid var(--color-accent);
+}
+
+/* Section rubrics (legends) + panel borders */
+body.page-home .calc-panel,
+body.page-home .calc-results-sidebar,
+body.page-home .calc-how-it-works .card,
+body.page-home .guide-card,
+body.page-home .home-state-block {
+  border-width: 2px;
+  border-color: var(--color-border-strong);
+}
+
+body.page-home .calc-steps {
+  border-bottom-width: 2px;
+  border-bottom-color: var(--color-border-strong);
+}
+
+body.page-home .calc-form-body legend {
+  border-bottom: 2px solid var(--color-border-strong);
+  padding-bottom: 0.55rem;
+  width: 100%;
+}
+
+body.page-home .home-section-title {
+  font-size: 2rem;
+  margin-bottom: 1.15rem;
+  border-bottom: 3px solid var(--color-border-strong);
+  padding-bottom: 0.55rem;
+  transition: color 0.15s ease;
+}
+
+body.page-home .home-section-title:hover {
+  color: var(--color-accent);
+  cursor: default;
+}
+
+/* Search / form fields — orange border always on homepage */
+body.page-home .home-city-directory__search input,
+body.page-home .calc-form-body .form-field input,
+body.page-home .calc-form-body .form-field select {
+  border: 2px solid var(--color-accent);
+  background: var(--color-surface-elevated);
+}
+
+body.page-home .home-city-directory__search input:focus,
+body.page-home .calc-form-body .form-field input:focus,
+body.page-home .calc-form-body .form-field select:focus {
+  border-color: var(--color-accent);
+  outline: none;
+  box-shadow: 0 0 0 3px var(--color-focus-ring);
+}
+
+body.page-home .guide-card h3,
+body.page-home .home-guides .guide-card h3 {
+  transition: color 0.15s ease;
+}
+
+body.page-home .guide-card:hover h3 {
+  color: var(--color-accent);
+}
+
+body.page-home .home-state-block summary strong {
+  transition: color 0.15s ease;
+}
+
+body.page-home .home-state-block summary:hover strong {
+  color: var(--color-accent);
 }
 
 body.page-home .calc-status {
@@ -213,11 +296,6 @@ body.page-home .calc-how-it-works p {
 }
 
 /* —— Popular guides —— */
-body.page-home .home-section-title {
-  font-size: 2rem;
-  margin-bottom: 1.15rem;
-}
-
 body.page-home .home-guides {
   padding: 2.75rem 0 1.25rem;
 }
@@ -262,6 +340,10 @@ body.page-home .home-city-directory__search input {
   font-size: 1.0625rem;
   min-height: 3.25rem;
   border-radius: 12px;
+}
+
+body.page-home .home-city-directory__search input:focus {
+  outline: none;
 }
 
 body.page-home .home-state-block summary {
