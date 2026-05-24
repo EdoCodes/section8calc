@@ -1,107 +1,94 @@
 ---
-import { cityPath, type Lang } from '../lib/i18n';
-import { getPlacesForState, placesMetaInfo, states } from '../lib/places';
+import { placesMetaInfo, states } from '../lib/places';
+import { citiesPath, statePath, type Lang } from '../lib/i18n';
 
 interface Props {
   lang: Lang;
   title: string;
   filterLabel: string;
   filterPlaceholder: string;
-  citiesLabel: (count: number) => string;
+  viewAllLabel: string;
 }
 
-const { lang, title, filterLabel, filterPlaceholder, citiesLabel } = Astro.props;
+const { lang, title, filterLabel, filterPlaceholder, viewAllLabel } = Astro.props;
 const sorted = [...states].sort((a, b) => a.name.localeCompare(b.name));
 const locale = lang === 'es' ? 'es-US' : 'en-US';
 ---
 
-<section class="container container--wide home-city-directory" id="search-by-city">
+<section class="container container--wide home-state-directory" id="browse-by-state">
   <h2 class="home-section-title">{title}</h2>
-  <p class="home-city-directory__meta">
+  <p class="home-state-directory__meta">
     {placesMetaInfo.totalPlaces.toLocaleString(locale)} {lang === 'es' ? 'ciudades y lugares en' : 'cities and places across'}{' '}
     {placesMetaInfo.stateCount} {lang === 'es' ? 'estados' : 'states'}.
   </p>
 
-  <div class="home-city-directory__search">
-    <label for="home-city-filter">{filterLabel}</label>
+  <div class="home-state-directory__search">
+    <label for="home-state-filter">{filterLabel}</label>
     <input
-      id="home-city-filter"
+      id="home-state-filter"
       type="search"
       placeholder={filterPlaceholder}
       autocomplete="off"
-      aria-controls="home-city-directory-states"
+      aria-controls="home-state-grid"
       enterkeyhint="search"
     />
   </div>
 
-  <div id="home-city-directory-states" class="home-city-directory__states">
+  <ul id="home-state-grid" class="state-grid state-grid--compact">
     {
-      sorted.map((state) => {
-        const places = getPlacesForState(state.abbr);
-        return (
-          <details class="home-state-block" data-state={state.slug} id={`state-${state.slug}`}>
-            <summary>
-              <strong>{state.name}</strong>
-              <span>{citiesLabel(places.length)}</span>
-            </summary>
-            <ul class="home-city-list">
-              {places.map((place) => (
-                <li data-name={place.displayName.toLowerCase()}>
-                  <a href={cityPath(lang, state.slug, place.slug)}>{place.displayName}</a>
-                  {place.type === 'cdp' && <span class="cdp-badge">CDP</span>}
-                </li>
-              ))}
-            </ul>
-          </details>
-        );
-      })
+      sorted.map((state) => (
+        <li data-name={state.name.toLowerCase()} data-abbr={state.abbr.toLowerCase()}>
+          <a href={statePath(lang, state.slug)}>
+            <strong>{state.name}</strong>
+            <span class="state-grid__abbr">{state.abbr}</span>
+          </a>
+        </li>
+      ))
     }
-  </div>
+  </ul>
+
+  <p class="home-state-directory__more">
+    <a href={citiesPath(lang)}>{viewAllLabel}</a>
+  </p>
 </section>
 
 <script>
-  const input = document.getElementById('home-city-filter') as HTMLInputElement | null;
-  const root = document.getElementById('home-city-directory-states');
-  if (!input || !root) {
-    /* static HTML still works */
-  } else {
+  const input = document.getElementById('home-state-filter') as HTMLInputElement | null;
+  const grid = document.getElementById('home-state-grid');
+  if (input && grid) {
     input.addEventListener('input', () => {
       const q = input.value.trim().toLowerCase();
-      root.querySelectorAll<HTMLDetailsElement>('.home-state-block').forEach((block) => {
-        const stateName = block.querySelector('summary strong')?.textContent?.toLowerCase() ?? '';
-        let visibleCities = 0;
-        block.querySelectorAll<HTMLElement>('.home-city-list li').forEach((li) => {
-          const name = li.dataset.name ?? '';
-          const show = !q || name.includes(q) || stateName.includes(q);
-          li.style.display = show ? '' : 'none';
-          if (show) visibleCities++;
-        });
-        const stateMatches = !q || stateName.includes(q);
-        const showBlock = stateMatches || visibleCities > 0;
-        block.style.display = showBlock ? '' : 'none';
-        if (q.length >= 2 && visibleCities > 0) block.open = true;
+      grid.querySelectorAll<HTMLLIElement>('li').forEach((li) => {
+        const name = li.dataset.name ?? '';
+        const abbr = li.dataset.abbr ?? '';
+        const show = !q || name.includes(q) || abbr.includes(q);
+        li.style.display = show ? '' : 'none';
       });
     });
   }
 </script>
 
 <style>
-  .home-city-directory {
+  .home-state-directory {
     padding-bottom: 4rem;
   }
-  .home-city-directory__meta {
+
+  .home-state-directory__meta {
     color: var(--color-ink-muted);
     margin: -0.5rem 0 1.25rem;
   }
-  .home-city-directory__search {
-    margin-bottom: 1.5rem;
+
+  .home-state-directory__search {
+    margin-bottom: 1.25rem;
   }
-  .home-city-directory__search label {
+
+  .home-state-directory__search label {
     display: block;
     font-weight: 600;
     margin-bottom: 0.35rem;
   }
-  .home-city-directory__search input {
+
+  .home-state-directory__search input {
     width: 100%;
     max-width: 28rem;
     padding: 0.75rem 1rem;
@@ -110,73 +97,23 @@ const locale = lang === 'es' ? 'es-US' : 'en-US';
     font-size: 1rem;
     background: var(--color-surface-elevated);
   }
-  .home-city-directory__search input:focus {
+
+  .home-state-directory__search input:focus {
     outline: none;
     border-color: var(--color-accent);
     box-shadow: 0 0 0 3px var(--color-focus-ring);
   }
-  .home-city-directory__states {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
+
+  .home-state-directory__more {
+    margin: 1.25rem 0 0;
+    font-weight: 600;
   }
-  .home-state-block {
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius);
-    background: var(--color-surface-elevated);
-    overflow: hidden;
-  }
-  .home-state-block summary {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    padding: 0.85rem 1rem;
-    cursor: pointer;
-    font-size: 0.95rem;
-    list-style: none;
-  }
-  .home-state-block summary::-webkit-details-marker {
-    display: none;
-  }
-  .home-state-block summary::before {
-    content: '▸';
-    margin-right: 0.5rem;
-    color: var(--color-accent);
-    transition: transform 0.15s;
-  }
-  .home-state-block[open] summary::before {
-    transform: rotate(90deg);
-  }
-  .home-state-block summary span {
-    font-size: 0.85rem;
-    color: var(--color-ink-muted);
-    font-weight: 500;
-  }
-  .home-city-list {
-    list-style: none;
-    margin: 0;
-    padding: 0.5rem 1rem 1rem;
-    display: grid;
-    gap: 0.2rem 1.25rem;
-    grid-template-columns: repeat(auto-fill, minmax(10.5rem, 1fr));
-    border-top: 1px solid var(--color-border);
-    max-height: 24rem;
-    overflow-y: auto;
-  }
-  .home-city-list li {
-    font-size: 0.88rem;
-  }
-  .home-city-list a {
+
+  .home-state-directory__more a {
     text-decoration: none;
-    color: var(--color-primary);
   }
-  .home-city-list a:hover {
-    color: var(--color-accent);
-  }
-  .cdp-badge {
-    font-size: 0.65rem;
-    color: var(--color-ink-muted);
-    margin-left: 0.2rem;
+
+  .home-state-directory__more a:hover {
+    text-decoration: underline;
   }
 </style>

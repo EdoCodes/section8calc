@@ -24,12 +24,12 @@ const count = placesMetaInfo.totalPlaces.toLocaleString(lang === 'es' ? 'es-US' 
 
 <section class="container" style="padding-bottom: 4rem;">
   <h2 class="home-section-title">{s.browseTitle}</h2>
-  <ul class="state-grid">
+  <ul class="state-grid state-grid--compact">
     {sorted.map((state) => (
       <li>
         <a href={statePath(lang, state.slug)}>
           <strong>{state.name}</strong>
-          <span>{state.placeCount.toLocaleString(lang === 'es' ? 'es-US' : 'en-US')} {lang === 'es' ? 'lugares' : 'places'}</span>
+          <span class="state-grid__abbr">{state.abbr}</span>
         </a>
       </li>
     ))}

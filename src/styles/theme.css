@@ -460,6 +460,47 @@ body.bg-mesh {
   border-color: var(--color-accent) !important;
 }
 
-.state-grid a:hover strong {
+.state-grid a:hover strong,
+.state-grid--compact a:hover .state-grid__abbr {
   color: var(--color-accent);
+}
+
+/* Compact state list — perdiemcalculator.com style (Alabama AL) */
+.state-grid--compact {
+  grid-template-columns: repeat(auto-fill, minmax(10.25rem, 1fr));
+  gap: 0.5rem;
+}
+
+.state-grid--compact a {
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.35rem;
+  padding: 0.55rem 0.7rem;
+  white-space: nowrap;
+}
+
+.state-grid--compact strong {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.state-grid--compact .state-grid__abbr {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--color-ink-muted);
+  letter-spacing: 0.02em;
+}
+
+@media (min-width: 640px) {
+  .state-grid--compact {
+    grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .state-grid--compact {
+    grid-template-columns: repeat(4, 1fr);
+  }
 }

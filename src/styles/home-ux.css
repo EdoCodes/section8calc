@@ -156,7 +156,7 @@ body.page-home .calc-panel,
 body.page-home .calc-results-sidebar,
 body.page-home .calc-how-it-works .card,
 body.page-home .guide-card,
-body.page-home .home-state-block {
+body.page-home .state-grid--compact a {
   border-width: 2px;
   border-color: var(--color-border-strong);
 }
@@ -186,14 +186,14 @@ body.page-home .home-section-title:hover {
 }
 
 /* Search / form fields — orange border always on homepage */
-body.page-home .home-city-directory__search input,
+body.page-home .home-state-directory__search input,
 body.page-home .calc-form-body .form-field input,
 body.page-home .calc-form-body .form-field select {
   border: 2px solid var(--color-accent);
   background: var(--color-surface-elevated);
 }
 
-body.page-home .home-city-directory__search input:focus,
+body.page-home .home-state-directory__search input:focus,
 body.page-home .calc-form-body .form-field input:focus,
 body.page-home .calc-form-body .form-field select:focus {
   border-color: var(--color-accent);
@@ -210,12 +210,9 @@ body.page-home .guide-card:hover h3 {
   color: var(--color-accent);
 }
 
-body.page-home .home-state-block summary strong {
+body.page-home .state-grid--compact a strong,
+body.page-home .state-grid--compact a .state-grid__abbr {
   transition: color 0.15s ease;
-}
-
-body.page-home .home-state-block summary:hover strong {
-  color: var(--color-accent);
 }
 
 body.page-home .calc-status {
@@ -321,18 +318,18 @@ body.page-home .home-guides__more {
   font-size: 1.05rem;
 }
 
-/* —— Search by city —— */
-body.page-home .home-city-directory__meta {
+/* —— Browse by state (compact grid) —— */
+body.page-home .home-state-directory__meta {
   font-size: 1.05rem;
   margin-bottom: 1.35rem;
 }
 
-body.page-home .home-city-directory__search label {
+body.page-home .home-state-directory__search label {
   font-size: 1.05rem;
   margin-bottom: 0.5rem;
 }
 
-body.page-home .home-city-directory__search input {
+body.page-home .home-state-directory__search input {
   max-width: 32rem;
   padding: 0.95rem 1.15rem;
   font-size: 1.0625rem;
@@ -340,38 +337,25 @@ body.page-home .home-city-directory__search input {
   border-radius: 12px;
 }
 
-body.page-home .home-city-directory__search input:focus {
+body.page-home .home-state-directory__search input:focus {
   outline: none;
 }
 
-body.page-home .home-state-block summary {
-  padding: 1rem 1.15rem;
-  font-size: 1.05rem;
-  min-height: 3.25rem;
+body.page-home .state-grid--compact a {
+  padding: 0.65rem 0.8rem;
+  min-height: 2.75rem;
 }
 
-body.page-home .home-state-block summary span {
+body.page-home .state-grid--compact strong {
+  font-size: 1rem;
+}
+
+body.page-home .state-grid--compact .state-grid__abbr {
   font-size: 0.95rem;
 }
 
-body.page-home .home-city-list {
-  gap: 0.35rem 1.35rem;
-  grid-template-columns: repeat(auto-fill, minmax(11.5rem, 1fr));
-  padding: 0.65rem 1.15rem 1.15rem;
-}
-
-body.page-home .home-city-list li {
-  font-size: 0.98rem;
-  line-height: 1.45;
-}
-
-body.page-home .home-city-list a {
-  padding: 0.2rem 0;
-  display: inline-block;
-}
-
-body.page-home .cdp-badge {
-  font-size: 0.72rem;
+body.page-home .home-state-directory__more {
+  font-size: 1.05rem;
 }
 
 /* —— Footer (homepage) —— */

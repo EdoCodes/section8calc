@@ -440,31 +440,30 @@ export function getSiteStrings(lang: Lang): SiteStrings {
 export type HomeStrings = {
   guidesTitle: string;
   allGuides: string;
-  searchByCityTitle: string;
-  cityFilterLabel: string;
-  cityFilterPlaceholder: string;
-  citiesCountLabel: (count: number) => string;
+  browseByStateTitle: string;
+  stateFilterLabel: string;
+  stateFilterPlaceholder: string;
+  viewAllStates: string;
 };
 
 export function getHomeStrings(lang: Lang): HomeStrings {
-  const locale = lang === 'es' ? 'es-US' : 'en-US';
   if (lang === 'es') {
     return {
       guidesTitle: 'Guías populares Section 8',
       allGuides: 'Ver todas las guías',
-      searchByCityTitle: 'Buscar por ciudad',
-      cityFilterLabel: 'Filtrar ciudades o estados',
-      cityFilterPlaceholder: 'Ej. Torrance, California, TX…',
-      citiesCountLabel: (count) => `${count.toLocaleString(locale)} lugares`,
+      browseByStateTitle: 'Section 8 por estado',
+      stateFilterLabel: 'Filtrar estados',
+      stateFilterPlaceholder: 'Ej. California, CA…',
+      viewAllStates: 'Ver todos los estados →',
     };
   }
   return {
     guidesTitle: 'Popular Section 8 guides',
     allGuides: 'Browse all guides',
-    searchByCityTitle: 'Search by city',
-    cityFilterLabel: 'Filter cities or states',
-    cityFilterPlaceholder: 'e.g. Torrance, California, TX…',
-    citiesCountLabel: (count) => `${count.toLocaleString(locale)} cities`,
+    browseByStateTitle: 'Browse Section 8 by state',
+    stateFilterLabel: 'Filter states',
+    stateFilterPlaceholder: 'e.g. California, CA…',
+    viewAllStates: 'View all states →',
   };
 }
 
