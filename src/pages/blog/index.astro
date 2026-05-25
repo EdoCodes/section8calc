@@ -1,0 +1,101 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import { blogPath, calcPath } from '../../lib/i18n';
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+---
+
+<BaseLayout
+  title="Section 8 Blog — Housing Voucher News, Tips & Guides"
+  description="Articles about Section 8 Housing Choice Vouchers: eligibility tips, waiting list updates, rent math, and renter advice."
+  canonicalPath={blogPath('en')}
+  lang="en"
+>
+  <section class="page-hero">
+    <div class="container">
+      <h1 class="font-display">Section 8 Blog</h1>
+      <p>Articles, tips, and updates for renters navigating the Housing Choice Voucher program.</p>
+    </div>
+  </section>
+
+  <section class="container" style="padding-bottom: 4rem;">
+    {posts.length === 0 ? (
+      <p style="color: var(--color-ink-muted);">Posts coming soon. In the meantime, <a href={calcPath('en')}>try the calculator</a>.</p>
+    ) : (
+      <div class="blog-grid">
+        {posts.map((post) => (
+          <a class="blog-card" href={`/blog/${post.id}/`}>
+            {post.data.tags[0] && <span class="tag">{post.data.tags[0]}</span>}
+            <h2>{post.data.title}</h2>
+            <p>{post.data.description}</p>
+            <time datetime={post.data.pubDate.toISOString()}>
+              {post.data.pubDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+            </time>
+          </a>
+        ))}
+      </div>
+    )}
+  </section>
+</BaseLayout>
+
+<style>
+  .blog-grid {
+    display: grid;
+    gap: 1.25rem;
+  }
+
+  @media (min-width: 640px) {
+    .blog-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 960px) {
+    .blog-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .blog-card {
+    background: var(--color-surface-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .blog-card:hover {
+    border-color: var(--color-accent);
+    box-shadow: var(--shadow);
+  }
+
+  .blog-card h2 {
+    font-size: 1.1rem;
+    margin: 0 0 0.5rem;
+    color: var(--color-ink);
+  }
+
+  .blog-card:hover h2 {
+    color: var(--color-accent);
+  }
+
+  .blog-card p {
+    margin: 0 0 0.75rem;
+    color: var(--color-ink-muted);
+    font-size: 0.92rem;
+    line-height: 1.5;
+    flex: 1;
+  }
+
+  .blog-card time {
+    font-size: 0.82rem;
+    color: var(--color-ink-muted);
+  }
+</style>

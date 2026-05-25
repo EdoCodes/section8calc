@@ -388,9 +388,9 @@ export type SiteStrings = {
   lang: Lang;
   siteName: string;
   siteTagline: string;
-  navCalculator: string;
   navCities: string;
   navGuides: string;
+  navBlog: string;
   navCta: string;
   langSwitch: string;
   langSwitchLabel: string;
@@ -398,6 +398,7 @@ export type SiteStrings = {
   calcLink: string;
   guidesLink: string;
   citiesLink: string;
+  blogLink: string;
 };
 
 export function getSiteStrings(lang: Lang): SiteStrings {
@@ -406,9 +407,9 @@ export function getSiteStrings(lang: Lang): SiteStrings {
       lang: 'es',
       siteName: 'Calculadora Section 8',
       siteTagline: 'Elegibilidad y renta con voucher',
-      navCalculator: 'Calculadora',
       navCities: 'Por ciudad',
       navGuides: 'Guías',
+      navBlog: 'Blog',
       navCta: 'Ver elegibilidad',
       langSwitch: 'English',
       langSwitchLabel: 'Cambiar a inglés',
@@ -417,15 +418,16 @@ export function getSiteStrings(lang: Lang): SiteStrings {
       calcLink: 'Calculadora Section 8',
       guidesLink: 'Guías de vivienda',
       citiesLink: 'Directorio por ciudad',
+      blogLink: 'Blog',
     };
   }
   return {
     lang: 'en',
     siteName: 'Section 8 Calculator',
     siteTagline: 'Voucher eligibility & rent estimates',
-    navCalculator: 'Calculator',
     navCities: 'By city',
     navGuides: 'Guides',
+    navBlog: 'Blog',
     navCta: 'Check eligibility',
     langSwitch: 'Español',
     langSwitchLabel: 'Switch to Spanish',
@@ -434,6 +436,7 @@ export function getSiteStrings(lang: Lang): SiteStrings {
     calcLink: 'Section 8 calculator',
     guidesLink: 'Housing guides',
     citiesLink: 'Browse by city',
+    blogLink: 'Blog',
   };
 }
 
@@ -532,6 +535,10 @@ export function citiesPath(lang: Lang): string {
 
 export function guidesPath(lang: Lang): string {
   return lang === 'es' ? '/es/guias/' : '/guides/';
+}
+
+export function blogPath(lang: Lang): string {
+  return lang === 'es' ? '/es/blog/' : '/blog/';
 }
 
 export function guideSlugPath(lang: Lang, slug: string): string {

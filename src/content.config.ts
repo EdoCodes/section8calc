@@ -57,4 +57,24 @@ const cityArticlesEs = defineCollection({
   schema: cityArticleSchema,
 });
 
-export const collections = { guides, 'guides-es': guidesEs, 'city-articles': cityArticles, 'city-articles-es': cityArticlesEs };
+const blogSchema = z.object({
+  title: z.string(),
+  description: z.string(),
+  pubDate: z.coerce.date(),
+  updatedDate: z.coerce.date().optional(),
+  tags: z.array(z.string()).default([]),
+  draft: z.boolean().default(false),
+  image: z.string().optional(),
+});
+
+const blog = defineCollection({
+  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/blog' }),
+  schema: blogSchema,
+});
+
+const blogEs = defineCollection({
+  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/blog-es' }),
+  schema: blogSchema,
+});
+
+export const collections = { guides, 'guides-es': guidesEs, 'city-articles': cityArticles, 'city-articles-es': cityArticlesEs, blog, 'blog-es': blogEs };

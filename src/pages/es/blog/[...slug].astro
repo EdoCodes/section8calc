@@ -1,0 +1,56 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog-es', ({ data }) => !data.draft);
+  return posts.map((post) => ({
+    params: { slug: post.id },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+const { title, description, pubDate, updatedDate, tags } = post.data;
+
+const articleLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: title,
+  description,
+  datePublished: pubDate.toISOString(),
+  dateModified: (updatedDate ?? pubDate).toISOString(),
+};
+---
+
+<BaseLayout title={title} description={description} ogType="article" lang="es">
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(articleLd)} />
+  </Fragment>
+
+  <article class="container prose" style="padding: 2rem 0 4rem;">
+    <p>
+      <a href="/es/blog/">← Todos los artículos</a>
+    </p>
+    {tags.map((tag) => <span class="tag">{tag}</span>)}
+    <h1>{title}</h1>
+    <p style="color: var(--color-muted);">
+      Publicado {pubDate.toLocaleDateString('es-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+    </p>
+
+    <div class="card" style="margin: 1.5rem 0;">
+      <p style="margin: 0;">
+        <strong>Calcule sus números:</strong>
+        <a href="/es/calculadora/" data-analytics="cta_calculator_blog">Use la calculadora Section 8</a> con su ZIP para ver elegibilidad y ayuda estimada.
+      </p>
+    </div>
+
+    <Content />
+
+    <hr style="margin: 2.5rem 0 1.5rem;" />
+    <p>
+      <a href="/es/blog/">← Más artículos</a> · <a href="/es/calculadora/">Calculadora Section 8</a>
+    </p>
+  </article>
+</BaseLayout>

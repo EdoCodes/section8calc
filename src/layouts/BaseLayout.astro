@@ -6,6 +6,7 @@ import SiteAnalytics from '../components/SiteAnalytics.astro';
 import SiteLogoMark from '../components/SiteLogoMark.astro';
 import {
   alternateLangPath,
+  blogPath,
   calcPath,
   citiesPath,
   getSiteStrings,
@@ -78,9 +79,9 @@ const esCanonical = lang === 'es' ? canonical : altCanonical;
           </span>
         </a>
         <nav class="site-nav" aria-label="Main">
-          <a href={calcPath(lang)} aria-current={Astro.url.pathname.includes('calculat') ? 'page' : undefined}>{s.navCalculator}</a>
           <a href={citiesPath(lang)} aria-current={Astro.url.pathname.includes('section-8') ? 'page' : undefined}>{s.navCities}</a>
           <a href={guidesPath(lang)} aria-current={Astro.url.pathname.includes('guides') || Astro.url.pathname.includes('guias') ? 'page' : undefined}>{s.navGuides}</a>
+          <a href={blogPath(lang)} aria-current={Astro.url.pathname.includes('blog') ? 'page' : undefined}>{s.navBlog}</a>
           <LanguageSwitcher lang={lang} />
           <a class="btn btn-primary" href={calcPath(lang)} data-analytics="cta_calculator_nav">{s.navCta}</a>
         </nav>
@@ -100,6 +101,7 @@ const esCanonical = lang === 'es' ? canonical : altCanonical;
           <a href={calcPath(lang)}>{s.calcLink}</a>
           {' '}· <a href={citiesPath(lang)}>{s.citiesLink}</a>
           {' '}· <a href={guidesPath(lang)}>{s.guidesLink}</a>
+          {' '}· <a href={blogPath(lang)}>{s.blogLink}</a>
         </p>
       </div>
     </footer>
