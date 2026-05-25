@@ -1,0 +1,142 @@
+---
+import BlogArticleLayout, { type BlogTocItem } from '../../components/BlogArticleLayout.astro';
+import { getEntry, render } from 'astro:content';
+
+const entry = await getEntry('blog', 'what-is-section-8-housing');
+if (!entry) throw new Error('Blog entry what-is-section-8-housing not found');
+
+const { Content } = await render(entry);
+const { title, description, pubDate, tags, image } = entry.data;
+
+const slugPath = '/blog/what-is-section-8-housing';
+const site = Astro.site?.href?.replace(/\/$/, '') ?? 'https://section8calculator.com';
+const pageUrl = `${site}${slugPath}`;
+
+const publishDate = pubDate.toISOString().slice(0, 10);
+const updatedDate = entry.data.updatedDate
+  ? entry.data.updatedDate.toISOString().slice(0, 10)
+  : publishDate;
+
+const wordCount = (entry.body ?? '').trim().split(/\s+/).filter(Boolean).length;
+const readingTime = `${Math.max(1, Math.ceil(wordCount / 200))} min read`;
+
+const tocItems: BlogTocItem[] = [
+  { href: '#how-section-8-works', label: 'How Section 8 works' },
+  { href: '#who-qualifies-for-section-8', label: 'Who qualifies' },
+  { href: '#how-much-does-section-8-pay', label: 'How much it pays' },
+  { href: '#types-of-section-8-vouchers', label: 'Types of vouchers' },
+  { href: '#the-waiting-list-what-to-expect', label: 'The waiting list' },
+  { href: '#how-to-apply-for-section-8', label: 'How to apply' },
+  { href: '#rights-and-responsibilities', label: 'Rights & responsibilities' },
+  { href: '#common-questions-about-section-8', label: 'Common questions' },
+  { href: '#section-8-vs-other-housing-programs', label: 'Section 8 vs. other programs' },
+  { href: '#next-steps', label: 'Next steps' },
+  { href: '#sources', label: 'Sources' },
+];
+
+const articleSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: title,
+  description,
+  image: image ? [`${site}${image}`] : [],
+  datePublished: publishDate,
+  dateModified: updatedDate,
+  author: {
+    '@type': 'Organization',
+    name: 'Section 8 Calculator',
+    url: site,
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'Section 8 Calculator',
+    url: site,
+    logo: { '@type': 'ImageObject', url: `${site}/favicon.svg` },
+  },
+  mainEntityOfPage: { '@type': 'WebPage', '@id': pageUrl },
+};
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: 'Can I use a Section 8 voucher anywhere in the U.S.?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Tenant-based vouchers are portable, meaning you can move to another PHA jurisdiction through a process called porting. Some PHAs restrict portability for the first year, and payment standards may differ between areas.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Do all landlords accept Section 8?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Not all landlords participate. However, a growing number of states and cities have source-of-income discrimination laws that prohibit landlords from refusing voucher holders solely based on their payment source.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'How much does Section 8 pay?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'The voucher covers the difference between your Total Tenant Payment (typically 30% of adjusted monthly income) and the PHA payment standard based on Fair Market Rents. If you rent above the payment standard, you pay the extra.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Who qualifies for Section 8?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Household income must be below 50% of Area Median Income, with 75% of new vouchers reserved for households below 30% AMI. At least one member must be a U.S. citizen or have eligible immigration status.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'How long is the Section 8 waiting list?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Wait times range from months in some rural areas to 3-7+ years in major coastal cities. Many large PHAs keep their lists closed and only open them for brief lottery windows.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Can I eventually buy a home with Section 8?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Yes. HUD offers a Housing Choice Voucher Homeownership Program that lets qualifying families use their voucher toward a mortgage payment instead of rent. Not all PHAs offer this option.',
+      },
+    },
+  ],
+};
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: `${site}/` },
+    { '@type': 'ListItem', position: 2, name: 'Blog', item: `${site}/blog/` },
+    { '@type': 'ListItem', position: 3, name: 'What Is Section 8 Housing?', item: pageUrl },
+  ],
+};
+---
+
+<BlogArticleLayout
+  title={title}
+  description={description}
+  canonical={slugPath}
+  lang="en"
+  author="Section 8 Calculator Team"
+  authorTitle="Editorial"
+  readingTime={readingTime}
+  updatedDate={updatedDate}
+  tags={tags}
+  heroImage={image}
+  tocItems={tocItems}
+>
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(articleSchema)} />
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(faqSchema)} />
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(breadcrumbSchema)} />
+  <Content />
+</BlogArticleLayout>

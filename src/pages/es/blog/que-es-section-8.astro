@@ -1,0 +1,127 @@
+---
+import BlogArticleLayout, { type BlogTocItem } from '../../../components/BlogArticleLayout.astro';
+import { getEntry, render } from 'astro:content';
+
+const entry = await getEntry('blog-es', 'que-es-section-8');
+if (!entry) throw new Error('Blog entry que-es-section-8 not found');
+
+const { Content } = await render(entry);
+const { title, description, pubDate, tags, image } = entry.data;
+
+const slugPath = '/es/blog/que-es-section-8';
+const site = Astro.site?.href?.replace(/\/$/, '') ?? 'https://section8calculator.com';
+const pageUrl = `${site}${slugPath}`;
+
+const publishDate = pubDate.toISOString().slice(0, 10);
+const updatedDate = entry.data.updatedDate
+  ? entry.data.updatedDate.toISOString().slice(0, 10)
+  : publishDate;
+
+const wordCount = (entry.body ?? '').trim().split(/\s+/).filter(Boolean).length;
+const readingTime = `${Math.max(1, Math.ceil(wordCount / 200))} min de lectura`;
+
+const tocItems: BlogTocItem[] = [
+  { href: '#cómo-funciona-section-8', label: 'Cómo funciona' },
+  { href: '#quién-califica-para-section-8', label: 'Quién califica' },
+  { href: '#cuánto-paga-section-8', label: 'Cuánto paga' },
+  { href: '#tipos-de-vouchers-section-8', label: 'Tipos de vouchers' },
+  { href: '#la-lista-de-espera-qué-esperar', label: 'La lista de espera' },
+  { href: '#cómo-solicitar-section-8', label: 'Cómo solicitar' },
+  { href: '#derechos-y-responsabilidades', label: 'Derechos y responsabilidades' },
+  { href: '#preguntas-comunes-sobre-section-8', label: 'Preguntas comunes' },
+  { href: '#section-8-vs-otros-programas-de-vivienda', label: 'Section 8 vs. otros' },
+  { href: '#próximos-pasos', label: 'Próximos pasos' },
+  { href: '#fuentes', label: 'Fuentes' },
+];
+
+const articleSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: title,
+  description,
+  image: image ? [`${site}${image}`] : [],
+  datePublished: publishDate,
+  dateModified: updatedDate,
+  inLanguage: 'es',
+  author: {
+    '@type': 'Organization',
+    name: 'Section 8 Calculator',
+    url: site,
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'Section 8 Calculator',
+    url: site,
+    logo: { '@type': 'ImageObject', url: `${site}/favicon.svg` },
+  },
+  mainEntityOfPage: { '@type': 'WebPage', '@id': pageUrl },
+};
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: '¿Puedo usar un voucher Section 8 en cualquier lugar de EE.UU.?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Los vouchers basados en inquilino son portables, lo que significa que puede mudarse a la jurisdicción de otra PHA a través de un proceso llamado porting. Algunas PHAs restringen la portabilidad durante el primer año.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: '¿Cuánto paga Section 8?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'El voucher cubre la diferencia entre su Total Tenant Payment (típicamente 30% del ingreso mensual ajustado) y el estándar de pago de la PHA basado en Rentas del Mercado Justo. Si renta por encima del estándar, usted paga lo extra.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: '¿Quién califica para Section 8?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'El ingreso del hogar debe estar por debajo del 50% del Ingreso Mediano del Área, con 75% de nuevos vouchers reservados para hogares por debajo del 30% AMI. Al menos un miembro debe ser ciudadano estadounidense o tener estatus migratorio elegible.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: '¿Puedo eventualmente comprar una casa con Section 8?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Sí. HUD ofrece un Programa de Propiedad de Vivienda con Voucher que permite a familias que califiquen usar su voucher hacia un pago de hipoteca en lugar de renta. No todas las PHAs ofrecen esta opción.',
+      },
+    },
+  ],
+};
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Inicio', item: `${site}/es/` },
+    { '@type': 'ListItem', position: 2, name: 'Blog', item: `${site}/es/blog/` },
+    { '@type': 'ListItem', position: 3, name: '¿Qué es Section 8?', item: pageUrl },
+  ],
+};
+---
+
+<BlogArticleLayout
+  title={title}
+  description={description}
+  canonical={slugPath}
+  lang="es"
+  author="Equipo Section 8 Calculator"
+  authorTitle="Editorial"
+  readingTime={readingTime}
+  updatedDate={updatedDate}
+  tags={tags}
+  heroImage={image}
+  tocItems={tocItems}
+>
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(articleSchema)} />
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(faqSchema)} />
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(breadcrumbSchema)} />
+  <Content />
+</BlogArticleLayout>
