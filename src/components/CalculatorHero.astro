@@ -11,12 +11,12 @@ const copy =
   lang === 'es'
     ? {
         step: 'Paso 1 de 3',
-        title: 'Estimación Section 8 estilo federal',
+        title: 'Estimación Section <span class="flip-8">8</span> estilo federal',
         lead: 'Ingrese su ZIP para cargar ciudad y condado, luego vea límites HUD y ayuda estimada del voucher.',
       }
     : {
         step: 'Step 1 of 3',
-        title: 'Federal-style Section 8 estimate',
+        title: 'Federal-style Section <span class="flip-8">8</span> estimate',
         lead: 'Enter your ZIP to load city and county, then see HUD income limits and estimated voucher help.',
       };
 ---
@@ -38,7 +38,7 @@ const copy =
   </div>
   <div class="container calc-hero__content">
     <p class="calc-step-label">{copy.step}</p>
-    <h1 id="calc-hero-title" class="font-display calc-hero__title">{copy.title}</h1>
+    <h1 id="calc-hero-title" class="font-display calc-hero__title" set:html={copy.title} />
     <p class="calc-hero__lead">{copy.lead}</p>
   </div>
 </section>

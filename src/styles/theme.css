@@ -394,6 +394,11 @@ body.bg-mesh {
   line-height: 1.55;
 }
 
+.flip-8 {
+  display: inline-block;
+  transform: rotate(180deg);
+}
+
 .calc-page-intro {
   padding: 2rem 0 0.5rem;
   text-align: center;
