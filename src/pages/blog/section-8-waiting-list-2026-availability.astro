@@ -1,0 +1,149 @@
+---
+import BlogArticleLayout, { type BlogTocItem } from '../../components/BlogArticleLayout.astro';
+import { getEntry, render } from 'astro:content';
+
+const entry = await getEntry('blog', 'section-8-waiting-list-2026-availability');
+if (!entry) throw new Error('Blog entry section-8-waiting-list-2026-availability not found');
+
+const { Content } = await render(entry);
+const { title, description, pubDate, tags, image } = entry.data;
+
+const slugPath = '/blog/section-8-waiting-list-2026-availability';
+const site = Astro.site?.href?.replace(/\/$/, '') ?? 'https://section8calculator.com';
+const pageUrl = `${site}${slugPath}`;
+
+const publishDate = pubDate.toISOString().slice(0, 10);
+const updatedDate = entry.data.updatedDate
+  ? entry.data.updatedDate.toISOString().slice(0, 10)
+  : publishDate;
+
+const wordCount = (entry.body ?? '').trim().split(/\s+/).filter(Boolean).length;
+const readingTime = `${Math.max(1, Math.ceil(wordCount / 200))} min read`;
+
+const tocItems: BlogTocItem[] = [
+  { href: '#quick-overview-how-section-8-works-in-2026', label: 'How Section 8 works' },
+  { href: '#how-section-8-waiting-lists-work-in-2026', label: 'Waiting lists explained' },
+  { href: '#key-section-8-eligibility-rules-in-2026', label: 'Eligibility rules' },
+  { href: '#preferences-who-moves-up-the-list-faster', label: 'Preferences & priorities' },
+  { href: '#which-states-and-regions-have-the-most-availability', label: 'Best availability by state' },
+  { href: '#how-to-find-open-section-8-waiting-lists-in-2026', label: 'Finding open lists' },
+  { href: '#how-to-protect-your-spot-on-the-waiting-list', label: 'Protecting your spot' },
+  { href: '#people-also-ask-section-8-waiting-lists-in-2026', label: 'People also ask' },
+  { href: '#faqs-eligibility-rules-and-2026-changes', label: 'FAQs' },
+  { href: '#practical-strategy-how-to-improve-your-odds-in-2026', label: 'Improve your odds' },
+  { href: '#sources', label: 'Sources' },
+];
+
+const articleSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: title,
+  description,
+  image: image ? [`${site}${image}`] : [],
+  datePublished: publishDate,
+  dateModified: updatedDate,
+  author: {
+    '@type': 'Organization',
+    name: 'Section 8 Calculator',
+    url: site,
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'Section 8 Calculator',
+    url: site,
+    logo: { '@type': 'ImageObject', url: `${site}/favicon.svg` },
+  },
+  mainEntityOfPage: { '@type': 'WebPage', '@id': pageUrl },
+};
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: 'How long is the Section 8 waiting list in 2026?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'It depends heavily on where you apply. Some states and large metros have average waits of three to seven years, while smaller cities and rural PHAs sometimes place families within months to a couple of years.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Which states have the best Section 8 availability right now?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Smaller markets in the Midwest, South, and rural West tend to have more open lists and shorter wait times. States like Georgia, parts of Texas, and some plains states show more openings, especially outside major cities.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Can I apply for Section 8 in more than one city or state?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Yes. HUD guidance and legal-aid groups note that you can apply to multiple PHAs. Local residency preferences may put non-local applicants lower on the list.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'What happens if I miss a letter or email from the housing authority?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'A PHA can mark your application inactive or remove it entirely. Returned mail or unanswered portal messages are common reasons people lose their place on the list.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Who qualifies for Section 8 in 2026?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Household income must generally be below 50% of area median income, with most vouchers reserved for those under 30% of AMI. At least one household member must have eligible citizenship or immigration status.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'How do I actually apply for Section 8 in 2026?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'You apply through a local PHA, not directly through HUD. Most agencies now use online portals. When the list is closed, you must wait for the PHA to announce a new opening or lottery period.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Are there any changes to Section 8 in 2026 I should know about?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Key 2026 developments include proposed funding changes, ongoing rollout of Small Area Fair Market Rents (SAFMRs) in more ZIP codes, and local tweaks to preference systems targeting homeless individuals, veterans, and people with disabilities.',
+      },
+    },
+  ],
+};
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: `${site}/` },
+    { '@type': 'ListItem', position: 2, name: 'Blog', item: `${site}/blog/` },
+    { '@type': 'ListItem', position: 3, name: 'Section 8 Waiting Lists 2026', item: pageUrl },
+  ],
+};
+---
+
+<BlogArticleLayout
+  title={title}
+  description={description}
+  canonical={slugPath}
+  lang="en"
+  author="Section 8 Calculator Team"
+  authorTitle="Editorial"
+  readingTime={readingTime}
+  updatedDate={updatedDate}
+  tags={tags}
+  tocItems={tocItems}
+>
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(articleSchema)} />
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(faqSchema)} />
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(breadcrumbSchema)} />
+  <Content />
+</BlogArticleLayout>
