@@ -17,16 +17,16 @@ body.page-home .site-header--glass .inner {
 }
 
 body.page-home .site-logo__mark {
-  width: 3.25rem;
-  height: 3.25rem;
+  width: 3rem;
+  height: 3rem;
 }
 
 body.page-home .site-logo__name {
-  font-size: 1.3rem;
+  font-size: 1.45rem;
 }
 
 body.page-home .site-logo__tagline {
-  font-size: 0.8rem;
+  font-size: 0.92rem;
 }
 
 body.page-home .site-nav {
