@@ -101,9 +101,10 @@
 }
 
 .calc-form-body fieldset {
-  border: none;
+  border: 2px solid var(--color-accent);
+  border-radius: 12px;
   margin: 0 0 1.5rem;
-  padding: 0;
+  padding: 1.1rem 1.15rem 1.15rem;
 }
 
 .calc-form-body legend {
@@ -112,7 +113,11 @@
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--color-primary-dark);
-  margin-bottom: 1rem;
+  margin: 0 auto;
+  padding: 0 0.75rem;
+  text-align: center;
+  float: none;
+  width: auto;
 }
 
 .calc-form-body .form-field input,
@@ -138,9 +143,6 @@
 
 .calc-fieldset--zip {
   background: var(--color-surface-muted);
-  border-radius: 12px;
-  padding: 1.1rem 1.15rem 1.15rem;
-  margin-bottom: 1.25rem;
 }
 
 .zip-lookup-row {
