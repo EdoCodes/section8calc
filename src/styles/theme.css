@@ -456,51 +456,71 @@ body.bg-mesh {
   margin: 0;
 }
 
-.state-grid a:hover {
-  border-color: var(--color-accent) !important;
+/* State directory grid — exact match to perdiemcalculator.com layout */
+.state-grid {
+  list-style: none;
+  padding: 0;
+  margin: 1.25rem 0 0;
+  display: grid;
+  gap: 0.45rem;
 }
 
-.state-grid a:hover strong,
-.state-grid--compact a:hover .state-grid__abbr {
-  color: var(--color-accent);
-}
-
-/* Compact state list — perdiemcalculator.com style (Alabama AL) */
 .state-grid--compact {
-  grid-template-columns: repeat(auto-fill, minmax(10.25rem, 1fr));
-  gap: 0.5rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 520px) {
+  .state-grid--compact {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.state-grid--compact li {
+  min-width: 0;
 }
 
 .state-grid--compact a {
+  display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: flex-start;
-  gap: 0.35rem;
-  padding: 0.55rem 0.7rem;
-  white-space: nowrap;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
+  height: 2.85rem;
+  padding: 0 1rem;
+  background: var(--color-surface-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  text-decoration: none;
+  color: inherit;
+  box-sizing: border-box;
+  transition: border-color 0.15s ease;
 }
 
 .state-grid--compact strong {
-  font-size: 0.92rem;
-  font-weight: 600;
+  font-size: 0.95rem;
+  font-weight: 400;
   color: var(--color-ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
 }
 
 .state-grid--compact .state-grid__abbr {
-  font-size: 0.88rem;
-  font-weight: 700;
+  flex-shrink: 0;
+  font-size: 0.82rem;
+  font-weight: 500;
   color: var(--color-ink-muted);
-  letter-spacing: 0.02em;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
-@media (min-width: 640px) {
-  .state-grid--compact {
-    grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
-  }
+.state-grid--compact a:hover {
+  border-color: var(--color-accent);
 }
 
-@media (min-width: 1024px) {
-  .state-grid--compact {
-    grid-template-columns: repeat(4, 1fr);
-  }
+.state-grid--compact a:hover strong,
+.state-grid--compact a:hover .state-grid__abbr {
+  color: var(--color-accent);
 }

@@ -22,8 +22,18 @@ const count = placesMetaInfo.totalPlaces.toLocaleString(lang === 'es' ? 'es-US' 
   </div>
 </section>
 
+<section class="container s8-intro" style="padding-top: 2rem;">
+  <h2>{s.subhead}</h2>
+  {s.intro.map((p) => <p>{p}</p>)}
+</section>
+
 <section class="container" style="padding-bottom: 4rem;">
   <h2 class="home-section-title">{s.browseTitle}</h2>
+  <p class="s8-directory-meta">
+    {placesMetaInfo.totalPlaces.toLocaleString(lang === 'es' ? 'es-US' : 'en-US')}
+    {lang === 'es' ? 'ciudades y lugares en' : 'cities and places across'}
+    {' '}{placesMetaInfo.stateCount} {lang === 'es' ? 'estados' : 'states'}.
+  </p>
   <ul class="state-grid state-grid--compact">
     {sorted.map((state) => (
       <li>
@@ -34,29 +44,45 @@ const count = placesMetaInfo.totalPlaces.toLocaleString(lang === 'es' ? 'es-US' 
       </li>
     ))}
   </ul>
+  <p class="s8-directory-more">
+    <a href={calcPath(lang)}>{s.viewAll}</a>
+  </p>
 </section>
 
 <style>
-  .state-grid {
-    list-style: none;
-    padding: 0;
-    margin: 1.5rem 0 0;
-    display: grid;
-    gap: 0.75rem;
-    grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+  .s8-intro {
+    max-width: 46rem;
   }
-  .state-grid a {
-    display: flex;
-    flex-direction: column;
-    padding: 1rem;
-    background: var(--color-surface-elevated);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius);
-    text-decoration: none;
-    color: inherit;
+
+  .s8-intro h2 {
+    font-size: 1.2rem;
+    margin: 0 0 0.75rem;
+    color: var(--color-ink);
   }
-  .state-grid span {
-    font-size: 0.85rem;
+
+  .s8-intro p {
     color: var(--color-ink-muted);
+    font-size: 0.98rem;
+    line-height: 1.6;
+    margin: 0 0 0.75rem;
+  }
+
+  .s8-directory-meta {
+    font-size: 0.92rem;
+    color: var(--color-ink-muted);
+    margin: -0.35rem 0 1rem;
+  }
+
+  .s8-directory-more {
+    margin-top: 1.25rem;
+    font-weight: 600;
+  }
+
+  .s8-directory-more a {
+    text-decoration: none;
+  }
+
+  .s8-directory-more a:hover {
+    text-decoration: underline;
   }
 </style>

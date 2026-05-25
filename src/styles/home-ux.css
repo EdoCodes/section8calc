@@ -155,8 +155,7 @@ body.page-home .calc-fieldset--zip {
 body.page-home .calc-panel,
 body.page-home .calc-results-sidebar,
 body.page-home .calc-how-it-works .card,
-body.page-home .guide-card,
-body.page-home .state-grid--compact a {
+body.page-home .guide-card {
   border-width: 2px;
   border-color: var(--color-border-strong);
 }
@@ -342,16 +341,16 @@ body.page-home .home-state-directory__search input:focus {
 }
 
 body.page-home .state-grid--compact a {
-  padding: 0.65rem 0.8rem;
-  min-height: 2.75rem;
+  height: 3rem;
+  padding: 0 1.1rem;
 }
 
 body.page-home .state-grid--compact strong {
-  font-size: 1rem;
+  font-size: 1.02rem;
 }
 
 body.page-home .state-grid--compact .state-grid__abbr {
-  font-size: 0.95rem;
+  font-size: 0.88rem;
 }
 
 body.page-home .home-state-directory__more {

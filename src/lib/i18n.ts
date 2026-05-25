@@ -474,6 +474,9 @@ export type Section8IndexStrings = {
   lead: (count: string) => string;
   cta: string;
   browseTitle: string;
+  subhead: string;
+  intro: string[];
+  viewAll: string;
 };
 
 export function getSection8IndexStrings(lang: Lang): Section8IndexStrings {
@@ -481,23 +484,37 @@ export function getSection8IndexStrings(lang: Lang): Section8IndexStrings {
     return {
       title: 'Section 8 por estado y ciudad — Directorio nacional',
       description: (count) =>
-        `Encuentre guías Section 8 y estimaciones para ${count} ciudades en los 50 estados.`,
+        `Encuentre guías Section 8 y estimaciones para ${count} ciudades en los 50 estados. Límites de ingreso HUD, Fair Market Rents y calculadora gratuita.`,
       h1: 'Section 8 en cada ciudad de EE. UU.',
       lead: (count) =>
         `Indexamos ${count} ciudades y lugares del censo — cada uno con página local y enlace a nuestra calculadora por ZIP.`,
       cta: 'Calcular para su ZIP',
       browseTitle: 'Explorar por estado',
+      subhead: 'Qué hay en cada página estatal',
+      intro: [
+        'El programa Housing Choice Voucher (Section 8) ayuda a hogares de muy bajos ingresos a pagar renta en vivienda privada. Las reglas de HUD son federales, pero los límites de ingreso, Fair Market Rents y listas de espera varían por condado y área metropolitana.',
+        'Cada página estatal enlaza a todas las ciudades del estado con información local: cómo solicitar, autoridades de vivienda (PHA) cercanas y nuestra calculadora por ZIP para estimar elegibilidad y ayuda mensual del voucher.',
+        'Seleccione su estado abajo para comenzar. Si ya conoce su código postal, puede ir directo a la calculadora.',
+      ],
+      viewAll: 'Ver todos los estados →',
     };
   }
   return {
     title: 'Section 8 Housing by State & City — Nationwide Directory',
     description: (count) =>
-      `Find Section 8 housing guides and calculator estimates for ${count} cities and places across all 50 states.`,
+      `Find Section 8 housing guides and calculator estimates for ${count} cities and places across all 50 states. HUD income limits, Fair Market Rents, and a free eligibility calculator.`,
     h1: 'Section 8 housing in every U.S. city',
     lead: (count) =>
       `We index ${count} cities, towns, and census places — each with a local page and link to our ZIP-based calculator.`,
     cta: 'Calculate for your ZIP',
-    browseTitle: 'Browse by state',
+    browseTitle: 'Browse Section 8 by state',
+    subhead: 'What you\'ll find on each state page',
+    intro: [
+      'The Housing Choice Voucher program (Section 8) helps very low-income households afford rent in private housing. HUD sets the federal rules, but income limits, Fair Market Rents, and waiting lists vary by county and metro area.',
+      'Each state page links to every city in that state with local program details: how to apply, nearby Public Housing Authorities (PHAs), and our ZIP-based calculator to estimate eligibility and monthly voucher help.',
+      'Pick your state below to get started. If you already know your ZIP code, you can jump straight to the calculator.',
+    ],
+    viewAll: 'View all states →',
   };
 }
 
