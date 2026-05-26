@@ -1,0 +1,131 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { states } from '../lib/places';
+---
+
+<BaseLayout
+  title="Sitemap | Section 8 Calculator"
+  description="Browse every page on Section 8 Calculator — guides, blog posts, city directories for all 50 states, and tools."
+>
+  <article class="container sitemap-page">
+    <h1>Sitemap</h1>
+    <p class="sitemap-intro">Find every page on Section 8 Calculator organized by category.</p>
+
+    <section class="sitemap-section">
+      <h2>Tools</h2>
+      <ul>
+        <li><a href="/calculator/">Section 8 Calculator</a></li>
+        <li><a href="/section-8/">Browse Section 8 by State</a></li>
+      </ul>
+    </section>
+
+    <section class="sitemap-section">
+      <h2>Guides</h2>
+      <ul>
+        <li><a href="/guides/">All Guides</a></li>
+        <li><a href="/guides/how-section-8-housing-works/">How Section 8 Housing Works (2026 Guide)</a></li>
+        <li><a href="/guides/section-8-housing-choice-voucher-program/">Housing Choice Voucher Program Explained</a></li>
+        <li><a href="/guides/section-8-income-limits-explained/">Section 8 Income Limits by Household Size</a></li>
+        <li><a href="/guides/how-to-apply-section-8-waiting-list/">How to Apply for Section 8</a></li>
+        <li><a href="/guides/section-8-rent-calculator-how-much-will-i-pay/">How Much Will I Pay With a Voucher?</a></li>
+      </ul>
+    </section>
+
+    <section class="sitemap-section">
+      <h2>Blog</h2>
+      <ul>
+        <li><a href="/blog/">All Blog Posts</a></li>
+        <li><a href="/blog/what-is-section-8-housing/">What Is Section 8 Housing?</a></li>
+        <li><a href="/blog/section-8-waiting-list-2026-availability/">Section 8 Waiting Lists in 2026</a></li>
+        <li><a href="/blog/section-8-neighborhoods-los-angeles-affordable-housing-programs/">Section 8 in Los Angeles</a></li>
+        <li><a href="/blog/section-8-neighborhoods-new-york-city/">Section 8 in New York City</a></li>
+        <li><a href="/blog/section-8-chicago-neighborhoods-programs/">Section 8 in Chicago</a></li>
+      </ul>
+    </section>
+
+    <section class="sitemap-section">
+      <h2>Section 8 by State</h2>
+      <div class="sitemap-state-grid">
+        {states.map((s) => (
+          <a href={`/section-8/${s.slug}/`} class="sitemap-state-link">
+            {s.name} <span class="sitemap-count">({s.placeCount.toLocaleString()})</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="sitemap-section">
+      <h2>Company</h2>
+      <ul>
+        <li><a href="/about/">About Us</a></li>
+        <li><a href="/contact/">Contact Us</a></li>
+        <li><a href="/disclaimer/">Disclaimer</a></li>
+      </ul>
+    </section>
+  </article>
+</BaseLayout>
+
+<style>
+  .sitemap-page {
+    padding: 2.5rem 0 4rem;
+    max-width: 52rem;
+  }
+  .sitemap-page h1 {
+    font-size: 2rem;
+    margin: 0 0 0.5rem;
+  }
+  .sitemap-intro {
+    color: var(--color-ink-muted);
+    font-size: 1.05rem;
+    margin: 0 0 2rem;
+  }
+  .sitemap-section {
+    margin-bottom: 2.25rem;
+  }
+  .sitemap-section h2 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin: 0 0 0.75rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 2px solid var(--color-accent, #ea7f2b);
+    color: var(--color-ink);
+  }
+  .sitemap-section ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+  .sitemap-section ul li a {
+    color: var(--color-ink);
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: color 0.15s;
+  }
+  .sitemap-section ul li a:hover {
+    color: var(--color-accent, #ea7f2b);
+    text-decoration: underline;
+  }
+  .sitemap-state-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 0.5rem 1.5rem;
+  }
+  .sitemap-state-link {
+    color: var(--color-ink);
+    text-decoration: none;
+    font-size: 0.93rem;
+    padding: 0.3rem 0;
+    transition: color 0.15s;
+  }
+  .sitemap-state-link:hover {
+    color: var(--color-accent, #ea7f2b);
+    text-decoration: underline;
+  }
+  .sitemap-count {
+    color: var(--color-ink-muted);
+    font-size: 0.82rem;
+  }
+</style>

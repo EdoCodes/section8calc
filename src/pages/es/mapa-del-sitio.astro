@@ -1,0 +1,132 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { states } from '../../lib/places';
+---
+
+<BaseLayout
+  title="Mapa del sitio | Section 8 Calculator"
+  description="Explore todas las páginas de Section 8 Calculator — guías, artículos de blog, directorios de ciudades para los 50 estados y herramientas."
+  lang="es"
+>
+  <article class="container sitemap-page">
+    <h1>Mapa del sitio</h1>
+    <p class="sitemap-intro">Encuentre todas las páginas de Section 8 Calculator organizadas por categoría.</p>
+
+    <section class="sitemap-section">
+      <h2>Herramientas</h2>
+      <ul>
+        <li><a href="/es/calculadora/">Calculadora Section 8</a></li>
+        <li><a href="/es/section-8/">Explorar Section 8 por estado</a></li>
+      </ul>
+    </section>
+
+    <section class="sitemap-section">
+      <h2>Guías</h2>
+      <ul>
+        <li><a href="/es/guias/">Todas las guías</a></li>
+        <li><a href="/es/guias/how-section-8-housing-works/">Cómo funciona la vivienda Section 8</a></li>
+        <li><a href="/es/guias/section-8-housing-choice-voucher-program/">Programa de vales de elección de vivienda</a></li>
+        <li><a href="/es/guias/section-8-income-limits-explained/">Límites de ingresos Section 8</a></li>
+        <li><a href="/es/guias/how-to-apply-section-8-waiting-list/">Cómo solicitar Section 8</a></li>
+        <li><a href="/es/guias/section-8-rent-calculator-how-much-will-i-pay/">¿Cuánto pagaré con un vale?</a></li>
+      </ul>
+    </section>
+
+    <section class="sitemap-section">
+      <h2>Blog</h2>
+      <ul>
+        <li><a href="/es/blog/">Todos los artículos</a></li>
+        <li><a href="/es/blog/que-es-section-8/">¿Qué es la vivienda Section 8?</a></li>
+        <li><a href="/es/blog/section-8-lista-espera-2026/">Listas de espera Section 8 en 2026</a></li>
+        <li><a href="/es/blog/section-8-vecindarios-los-angeles/">Section 8 en Los Ángeles</a></li>
+        <li><a href="/es/blog/section-8-vecindarios-nueva-york/">Section 8 en Nueva York</a></li>
+        <li><a href="/es/blog/section-8-vecindarios-chicago/">Section 8 en Chicago</a></li>
+      </ul>
+    </section>
+
+    <section class="sitemap-section">
+      <h2>Section 8 por estado</h2>
+      <div class="sitemap-state-grid">
+        {states.map((s) => (
+          <a href={`/es/section-8/${s.slug}/`} class="sitemap-state-link">
+            {s.name} <span class="sitemap-count">({s.placeCount.toLocaleString()})</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="sitemap-section">
+      <h2>Empresa</h2>
+      <ul>
+        <li><a href="/es/sobre-nosotros/">Sobre nosotros</a></li>
+        <li><a href="/es/contacto/">Contáctenos</a></li>
+        <li><a href="/es/aviso-legal/">Aviso legal</a></li>
+      </ul>
+    </section>
+  </article>
+</BaseLayout>
+
+<style>
+  .sitemap-page {
+    padding: 2.5rem 0 4rem;
+    max-width: 52rem;
+  }
+  .sitemap-page h1 {
+    font-size: 2rem;
+    margin: 0 0 0.5rem;
+  }
+  .sitemap-intro {
+    color: var(--color-ink-muted);
+    font-size: 1.05rem;
+    margin: 0 0 2rem;
+  }
+  .sitemap-section {
+    margin-bottom: 2.25rem;
+  }
+  .sitemap-section h2 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin: 0 0 0.75rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 2px solid var(--color-accent, #ea7f2b);
+    color: var(--color-ink);
+  }
+  .sitemap-section ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+  .sitemap-section ul li a {
+    color: var(--color-ink);
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: color 0.15s;
+  }
+  .sitemap-section ul li a:hover {
+    color: var(--color-accent, #ea7f2b);
+    text-decoration: underline;
+  }
+  .sitemap-state-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 0.5rem 1.5rem;
+  }
+  .sitemap-state-link {
+    color: var(--color-ink);
+    text-decoration: none;
+    font-size: 0.93rem;
+    padding: 0.3rem 0;
+    transition: color 0.15s;
+  }
+  .sitemap-state-link:hover {
+    color: var(--color-accent, #ea7f2b);
+    text-decoration: underline;
+  }
+  .sitemap-count {
+    color: var(--color-ink-muted);
+    font-size: 0.82rem;
+  }
+</style>
