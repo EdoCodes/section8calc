@@ -4,3 +4,4 @@
 
 [build.environment]
   NODE_OPTIONS = "--max-old-space-size=6144"
+  NODE_VERSION = "22"

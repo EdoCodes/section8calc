@@ -150,6 +150,12 @@ function parseLines(text) {
 }
 
 async function main() {
+  const { existsSync, readdirSync } = await import('node:fs');
+  if (existsSync(DATA_DIR) && readdirSync(DATA_DIR).filter(f => f.endsWith('.json')).length > 40) {
+    console.log('Places data already exists — skipping download.');
+    return;
+  }
+
   console.log('Downloading Census 2020 places…');
   const text = await fetchCensusPlaces();
   const byState = parseLines(text);
