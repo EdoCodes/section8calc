@@ -1,0 +1,124 @@
+---
+import BlogArticleLayout, { type BlogTocItem } from '../../../components/BlogArticleLayout.astro';
+import { getEntry, render } from 'astro:content';
+
+const entry = await getEntry('blog-es', 'section-8-vecindarios-nueva-york');
+if (!entry) throw new Error('Blog entry section-8-vecindarios-nueva-york not found');
+
+const { Content } = await render(entry);
+const { title, description, pubDate, tags, image } = entry.data;
+
+const slugPath = '/es/blog/section-8-vecindarios-nueva-york';
+const site = Astro.site?.href?.replace(/\/$/, '') ?? 'https://section8calculator.com';
+const pageUrl = `${site}${slugPath}`;
+
+const publishDate = pubDate.toISOString().slice(0, 10);
+const updatedDate = entry.data.updatedDate
+  ? entry.data.updatedDate.toISOString().slice(0, 10)
+  : publishDate;
+
+const wordCount = (entry.body ?? '').trim().split(/\s+/).filter(Boolean).length;
+const readingTime = `${Math.max(1, Math.ceil(wordCount / 200))} min de lectura`;
+
+const tocItems: BlogTocItem[] = [
+  { href: '#cómo-se-organiza-section-8-en-nueva-york', label: 'Organización de Section 8 en NYC' },
+  { href: '#dónde-viven-los-hogares-con-section-8-en-nueva-york', label: 'Dónde se concentran los vouchers' },
+  { href: '#por-qué-section-8-se-concentra-en-ciertos-vecindarios-de-nyc', label: 'Por qué se concentran' },
+  { href: '#principales-programas-de-section-8-y-asistencia-de-alquiler-en-nyc', label: 'Programas en NYC' },
+  { href: '#producción-de-vivienda-asequible-housing-new-york', label: 'Housing New York' },
+  { href: '#preguntas-frecuentes-section-8-en-nueva-york', label: 'Preguntas frecuentes' },
+  { href: '#personas-también-preguntan-section-8-en-nueva-york', label: 'Personas también preguntan' },
+  { href: '#fuentes', label: 'Fuentes' },
+];
+
+const articleSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: title,
+  description,
+  image: image ? [`${site}${image}`] : [],
+  datePublished: publishDate,
+  dateModified: updatedDate,
+  inLanguage: 'es',
+  author: {
+    '@type': 'Organization',
+    name: 'Section 8 Calculator',
+    url: site,
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'Section 8 Calculator',
+    url: site,
+    logo: { '@type': 'ImageObject', url: `${site}/favicon.svg` },
+  },
+  mainEntityOfPage: { '@type': 'WebPage', '@id': pageUrl },
+};
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: '¿Qué vecindarios de NYC tienen más vivienda Section 8?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Los datos de HUD muestran concentraciones en partes del Bronx, norte de Manhattan (Harlem, Washington Heights), centro y este de Brooklyn (East New York, Brownsville), y áreas de Queens y North Shore de Staten Island.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: '¿Quién califica para Section 8 en Nueva York?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'El ingreso del hogar debe estar por debajo del 50% del AMI, con prioridad para hogares por debajo del 30% AMI. Al menos un miembro debe tener ciudadanía o estatus migratorio elegible.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: '¿Cuánto dura la lista de espera de Section 8 en NYC?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Es extremadamente larga. En 2024, NYCHA reabrió por primera vez en casi 15 años, seleccionando 200,000 hogares por lotería. Los tiempos de espera son de años.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: '¿Cuál es la diferencia entre Section 8 y CityFHEPS?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Section 8 es un programa federal administrado por NYCHA. CityFHEPS es un suplemento de alquiler municipal administrado por DSS/HRA para prevenir la falta de vivienda, utilizable en todo el Estado de Nueva York.',
+      },
+    },
+  ],
+};
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Inicio', item: `${site}/es/` },
+    { '@type': 'ListItem', position: 2, name: 'Blog', item: `${site}/es/blog/` },
+    { '@type': 'ListItem', position: 3, name: 'Section 8 en Nueva York', item: pageUrl },
+  ],
+};
+---
+
+<BlogArticleLayout
+  title={title}
+  description={description}
+  canonical={slugPath}
+  lang="es"
+  author="Equipo Section 8 Calculator"
+  authorTitle="Editorial"
+  readingTime={readingTime}
+  updatedDate={updatedDate}
+  tags={tags}
+  heroImage={image}
+  tocItems={tocItems}
+>
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(articleSchema)} />
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(faqSchema)} />
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(breadcrumbSchema)} />
+  <Content />
+</BlogArticleLayout>

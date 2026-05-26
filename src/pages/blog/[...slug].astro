@@ -3,7 +3,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCollection, render } from 'astro:content';
 
 export async function getStaticPaths() {
-  const dedicated = new Set(['section-8-waiting-list-2026-availability', 'what-is-section-8-housing', 'section-8-neighborhoods-los-angeles-affordable-housing-programs']);
+  const dedicated = new Set(['section-8-waiting-list-2026-availability', 'what-is-section-8-housing', 'section-8-neighborhoods-los-angeles-affordable-housing-programs', 'section-8-neighborhoods-new-york-city']);
   const posts = await getCollection('blog', ({ data, id }) => !data.draft && !dedicated.has(id));
   return posts.map((post) => ({
     params: { slug: post.id },

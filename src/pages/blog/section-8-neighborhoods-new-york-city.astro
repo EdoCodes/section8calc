@@ -1,0 +1,148 @@
+---
+import BlogArticleLayout, { type BlogTocItem } from '../../components/BlogArticleLayout.astro';
+import { getEntry, render } from 'astro:content';
+
+const entry = await getEntry('blog', 'section-8-neighborhoods-new-york-city');
+if (!entry) throw new Error('Blog entry section-8-neighborhoods-new-york-city not found');
+
+const { Content } = await render(entry);
+const { title, description, pubDate, tags, image } = entry.data;
+
+const slugPath = '/blog/section-8-neighborhoods-new-york-city';
+const site = Astro.site?.href?.replace(/\/$/, '') ?? 'https://section8calculator.com';
+const pageUrl = `${site}${slugPath}`;
+
+const publishDate = pubDate.toISOString().slice(0, 10);
+const updatedDate = entry.data.updatedDate
+  ? entry.data.updatedDate.toISOString().slice(0, 10)
+  : publishDate;
+
+const wordCount = (entry.body ?? '').trim().split(/\s+/).filter(Boolean).length;
+const readingTime = `${Math.max(1, Math.ceil(wordCount / 200))} min read`;
+
+const tocItems: BlogTocItem[] = [
+  { href: '#how-section-8-is-organized-in-new-york-city', label: 'How Section 8 is organized in NYC' },
+  { href: '#where-section-8-households-live-in-new-york-city', label: 'Where vouchers are concentrated' },
+  { href: '#why-section-8-clusters-in-certain-nyc-neighborhoods', label: 'Why vouchers cluster' },
+  { href: '#major-section-8-and-rental-assistance-programs-in-nyc', label: 'NYC rental assistance programs' },
+  { href: '#affordable-housing-production-housing-new-york-and-beyond', label: 'Housing New York' },
+  { href: '#faqs-using-section-8-and-finding-affordable-housing-in-nyc', label: 'FAQs' },
+  { href: '#people-also-ask-section-8-in-new-york-city', label: 'People also ask' },
+  { href: '#how-policy-changes-may-shift-section-8-neighborhood-patterns-in-nyc', label: 'Policy changes ahead' },
+  { href: '#sources', label: 'Sources' },
+];
+
+const articleSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: 'Section 8 in New York City: Neighborhoods, Voucher Hotspots, and Affordable Housing Programs in 2026',
+  description,
+  image: image ? [`${site}${image}`] : [],
+  datePublished: publishDate,
+  dateModified: updatedDate,
+  author: {
+    '@type': 'Organization',
+    name: 'Section 8 Calculator',
+    url: site,
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'Section 8 Calculator',
+    url: site,
+    logo: { '@type': 'ImageObject', url: `${site}/favicon.svg` },
+  },
+  mainEntityOfPage: { '@type': 'WebPage', '@id': pageUrl },
+};
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: 'Which neighborhoods in NYC have the most Section 8 housing?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'HUD data and city research show that many Section 8 households live in parts of the Bronx, northern Manhattan (Harlem, Washington Heights), and central and eastern Brooklyn (East New York, Brownsville), along with some areas of Queens and the North Shore of Staten Island.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Can you use a Section 8 voucher in Manhattan or more expensive neighborhoods?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Yes. NYCHA vouchers are tenant-based, so families can search anywhere in NYC. In practice, voucher use is much lower in high-rent areas like Midtown and the Upper East Side because asking rents exceed voucher caps and many landlords do not participate.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'How long is the Section 8 waiting list in NYC?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'NYCHA reopened its Section 8 waitlist in 2024 for the first time in nearly 15 years, selecting 200,000 households via lottery. Due to funding limits, average waits can span years.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Who qualifies for Section 8 in New York City?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Household income must be below 50% of Area Median Income, with priority for extremely low-income households below 30% AMI. At least one member must have eligible citizenship or immigration status.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: "What's the difference between Section 8 and CityFHEPS?",
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Section 8 is a federal program funded by HUD and administered by NYCHA. CityFHEPS is a city-funded rent supplement run by DSS/HRA designed to prevent homelessness. Both pay rent directly to landlords but have different eligibility, funding, and rules.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'How much rent does Section 8 cover in NYC?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Most Section 8 households pay about 30% of adjusted monthly income toward rent and utilities. The voucher covers the rest up to the payment standard, which varies by bedroom size and neighborhood based on HUD FMRs and SAFMRs.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'What other affordable housing options exist besides Section 8 and CityFHEPS?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'NYCHA public housing (separate waitlists), affordable lottery units through Housing New York on Housing Connect, supportive housing, and state rent-supplement programs such as FHEPS.',
+      },
+    },
+  ],
+};
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: `${site}/` },
+    { '@type': 'ListItem', position: 2, name: 'Blog', item: `${site}/blog/` },
+    { '@type': 'ListItem', position: 3, name: 'Section 8 Neighborhoods in NYC', item: pageUrl },
+  ],
+};
+---
+
+<BlogArticleLayout
+  title={title}
+  description={description}
+  canonical={slugPath}
+  lang="en"
+  author="Section 8 Calculator Team"
+  authorTitle="Editorial"
+  readingTime={readingTime}
+  updatedDate={updatedDate}
+  tags={tags}
+  heroImage={image}
+  tocItems={tocItems}
+>
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(articleSchema)} />
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(faqSchema)} />
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(breadcrumbSchema)} />
+  <Content />
+</BlogArticleLayout>
