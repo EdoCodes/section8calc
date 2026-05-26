@@ -1,0 +1,88 @@
+---
+import BlogArticleLayout, { type BlogTocItem } from '../../../components/BlogArticleLayout.astro';
+import { getEntry, render } from 'astro:content';
+
+const entry = await getEntry('blog-es', 'section-8-vecindarios-chicago');
+if (!entry) throw new Error('Blog entry section-8-vecindarios-chicago not found');
+
+const { Content } = await render(entry);
+const { title, description, pubDate, tags, image } = entry.data;
+
+const slugPath = '/es/blog/section-8-vecindarios-chicago';
+const site = Astro.site?.href?.replace(/\/$/, '') ?? 'https://section8calculator.com';
+const pageUrl = `${site}${slugPath}`;
+
+const publishDate = pubDate.toISOString().slice(0, 10);
+const updatedDate = entry.data.updatedDate
+  ? entry.data.updatedDate.toISOString().slice(0, 10)
+  : publishDate;
+
+const wordCount = (entry.body ?? '').trim().split(/\s+/).filter(Boolean).length;
+const readingTime = `${Math.max(1, Math.ceil(wordCount / 200))} min de lectura`;
+
+const tocItems: BlogTocItem[] = [
+  { href: '#qué-tan-grande-es-el-programa-section-8-de-chicago', label: 'Programa Section 8 de Chicago' },
+  { href: '#dónde-se-concentran-los-vouchers-section-8-en-chicago', label: 'Dónde se concentran' },
+  { href: '#por-qué-los-vouchers-se-concentran-en-ciertos-vecindarios', label: 'Por qué se concentran' },
+  { href: '#cómo-funciona-el-programa-hcv-de-chicago', label: 'Cómo funciona el HCV' },
+  { href: '#consejería-de-movilidad', label: 'Consejería de movilidad' },
+  { href: '#más-allá-de-section-8-otros-recursos-de-vivienda-en-chicago', label: 'Otros recursos' },
+  { href: '#preguntas-frecuentes-section-8-en-chicago', label: 'Preguntas frecuentes' },
+  { href: '#personas-también-preguntan-section-8-en-chicago', label: 'Personas también preguntan' },
+  { href: '#fuentes', label: 'Fuentes' },
+];
+
+const articleSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: title,
+  description,
+  image: image ? [`${site}${image}`] : [],
+  datePublished: publishDate,
+  dateModified: updatedDate,
+  inLanguage: 'es',
+  author: { '@type': 'Organization', name: 'Section 8 Calculator', url: site },
+  publisher: { '@type': 'Organization', name: 'Section 8 Calculator', url: site, logo: { '@type': 'ImageObject', url: `${site}/favicon.svg` } },
+  mainEntityOfPage: { '@type': 'WebPage', '@id': pageUrl },
+};
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    { '@type': 'Question', name: '¿Qué vecindarios de Chicago tienen más vouchers Section 8?', acceptedAnswer: { '@type': 'Answer', text: 'South Shore y Austin cada uno tenía más de 3,000 hogares con vouchers — más que las 19 comunidades de mayoría blanca combinadas. Los vouchers se concentran en vecindarios del South y West Side.' } },
+    { '@type': 'Question', name: '¿Quién califica para Section 8 en Chicago?', acceptedAnswer: { '@type': 'Answer', text: 'Hogares con ingresos por debajo del 50% del AMI, con prioridad para aquellos bajo 30% AMI. Al menos un miembro debe tener ciudadanía o estatus migratorio elegible.' } },
+    { '@type': 'Question', name: '¿Hay incentivos para propietarios que acepten Section 8 en Chicago?', acceptedAnswer: { '@type': 'Answer', text: 'Sí. CHA ofrece un pago de incentivo único, pagos por vacancia de hasta 2 meses, y modificaciones de accesibilidad sin costo para el propietario.' } },
+    { '@type': 'Question', name: '¿Cuántas familias atiende el programa HCV de Chicago?', acceptedAnswer: { '@type': 'Answer', text: 'Más de 47,000 familias, con autorización para más de 54,000 unidades, siendo uno de los programas de vouchers más grandes del país.' } },
+  ],
+};
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Inicio', item: `${site}/es/` },
+    { '@type': 'ListItem', position: 2, name: 'Blog', item: `${site}/es/blog/` },
+    { '@type': 'ListItem', position: 3, name: 'Section 8 en Chicago', item: pageUrl },
+  ],
+};
+---
+
+<BlogArticleLayout
+  title={title}
+  description={description}
+  canonical={slugPath}
+  lang="es"
+  author="Equipo Section 8 Calculator"
+  authorTitle="Editorial"
+  readingTime={readingTime}
+  updatedDate={updatedDate}
+  tags={tags}
+  heroImage={image}
+  tocItems={tocItems}
+>
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(articleSchema)} />
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(faqSchema)} />
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(breadcrumbSchema)} />
+  <Content />
+</BlogArticleLayout>
