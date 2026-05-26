@@ -29,14 +29,25 @@ const count = placesMetaInfo.totalPlaces.toLocaleString(lang === 'es' ? 'es-US' 
 
 <section class="container" style="padding-bottom: 4rem;">
   <h2 class="home-section-title">{s.browseTitle}</h2>
+
+  <div class="s8-search-wrap">
+    <input
+      type="search"
+      id="state-search"
+      class="s8-search-input"
+      placeholder={lang === 'es' ? 'Buscar estado…' : 'Search for a state…'}
+      autocomplete="off"
+    />
+  </div>
+
   <p class="s8-directory-meta">
     {placesMetaInfo.totalPlaces.toLocaleString(lang === 'es' ? 'es-US' : 'en-US')}
     {lang === 'es' ? 'ciudades y lugares en' : 'cities and places across'}
     {' '}{placesMetaInfo.stateCount} {lang === 'es' ? 'estados' : 'states'}.
   </p>
-  <ul class="state-grid state-grid--compact">
+  <ul class="state-grid state-grid--compact" id="state-grid">
     {sorted.map((state) => (
-      <li>
+      <li data-name={state.name.toLowerCase()} data-abbr={state.abbr.toLowerCase()}>
         <a href={statePath(lang, state.slug)}>
           <strong>{state.name}</strong>
           <span class="state-grid__abbr">{state.abbr}</span>
@@ -85,4 +96,47 @@ const count = placesMetaInfo.totalPlaces.toLocaleString(lang === 'es' ? 'es-US' 
   .s8-directory-more a:hover {
     text-decoration: underline;
   }
+
+  .s8-search-wrap {
+    margin: 0.5rem 0 1rem;
+    max-width: 26rem;
+  }
+
+  .s8-search-input {
+    width: 100%;
+    padding: 0.55rem 0.85rem;
+    font-size: 0.95rem;
+    border: 2px solid var(--color-border, #d4d4d8);
+    border-radius: 8px;
+    background: #fff;
+    color: var(--color-ink);
+    transition: border-color 0.15s;
+  }
+
+  .s8-search-input:focus {
+    outline: none;
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px rgba(var(--color-accent-rgb, 234, 127, 43), 0.15);
+  }
+
+  .s8-search-input::placeholder {
+    color: var(--color-ink-muted);
+  }
 </style>
+
+<script>
+  const input = document.getElementById('state-search');
+  const grid = document.getElementById('state-grid');
+  if (input && grid) {
+    const items = Array.from(grid.querySelectorAll('li'));
+    input.addEventListener('input', () => {
+      const q = (input as HTMLInputElement).value.trim().toLowerCase();
+      items.forEach((li) => {
+        const name = li.getAttribute('data-name') || '';
+        const abbr = li.getAttribute('data-abbr') || '';
+        (li as HTMLElement).style.display =
+          !q || name.includes(q) || abbr.includes(q) ? '' : 'none';
+      });
+    });
+  }
+</script>
