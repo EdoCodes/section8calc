@@ -1,0 +1,122 @@
+---
+import BlogArticleLayout, { type BlogTocItem } from '../../../components/BlogArticleLayout.astro';
+import { getEntry, render } from 'astro:content';
+
+const entry = await getEntry('blog-es', 'section-8-vecindarios-los-angeles');
+if (!entry) throw new Error('Blog entry section-8-vecindarios-los-angeles not found');
+
+const { Content } = await render(entry);
+const { title, description, pubDate, tags, image } = entry.data;
+
+const slugPath = '/es/blog/section-8-vecindarios-los-angeles';
+const site = Astro.site?.href?.replace(/\/$/, '') ?? 'https://section8calculator.com';
+const pageUrl = `${site}${slugPath}`;
+
+const publishDate = pubDate.toISOString().slice(0, 10);
+const updatedDate = entry.data.updatedDate
+  ? entry.data.updatedDate.toISOString().slice(0, 10)
+  : publishDate;
+
+const wordCount = (entry.body ?? '').trim().split(/\s+/).filter(Boolean).length;
+const readingTime = `${Math.max(1, Math.ceil(wordCount / 200))} min de lectura`;
+
+const tocItems: BlogTocItem[] = [
+  { href: '#cómo-se-organiza-section-8-en-los-ángeles', label: 'Organización de Section 8 en LA' },
+  { href: '#dónde-se-concentra-la-vivienda-section-8-en-los-ángeles', label: 'Dónde se concentran los vouchers' },
+  { href: '#por-qué-los-vouchers-se-concentran-en-ciertos-vecindarios', label: 'Por qué se concentran' },
+  { href: '#principales-programas-de-vivienda-asequible-en-la-ciudad-y-el-condado-de-la', label: 'Programas de vivienda en LA' },
+  { href: '#preguntas-frecuentes-section-8-en-los-ángeles', label: 'Preguntas frecuentes' },
+  { href: '#fuentes', label: 'Fuentes' },
+];
+
+const articleSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: title,
+  description,
+  image: image ? [`${site}${image}`] : [],
+  datePublished: publishDate,
+  dateModified: updatedDate,
+  inLanguage: 'es',
+  author: {
+    '@type': 'Organization',
+    name: 'Section 8 Calculator',
+    url: site,
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'Section 8 Calculator',
+    url: site,
+    logo: { '@type': 'ImageObject', url: `${site}/favicon.svg` },
+  },
+  mainEntityOfPage: { '@type': 'WebPage', '@id': pageUrl },
+};
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: '¿Quién administra Section 8 en la Ciudad y el Condado de Los Ángeles?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'HACLA administra Section 8 dentro de la Ciudad de Los Ángeles. LACDA administra el programa para áreas no incorporadas del condado y ciudades participantes, sirviendo a más de 28,000 familias.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: '¿Cuánto dura la lista de espera de Section 8 en LA?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Los tiempos promedio de espera son de 24 meses para HACLA y 27 meses para LACDA. HACLA abre su lista mediante loterías infrecuentes.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: '¿Qué vecindarios de Los Ángeles tienen más vivienda Section 8?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'South Los Ángeles, partes de Central LA, el área del Harbor, porciones del Valle de San Fernando y el Valle de Antelope (Lancaster, Palmdale) tienen las mayores concentraciones de hogares con vouchers.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: '¿Cómo está el Condado de LA aumentando la vivienda asequible?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'A través de bonos Prop HHH ($1.2B para vivienda de apoyo), el Fondo Fiduciario de Vivienda Asequible del Condado, el Plan PLHA de Cinco Años y las NOFAs de LACAHSA financiadas por la Medida A con una ronda de $200M.',
+      },
+    },
+  ],
+};
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Inicio', item: `${site}/es/` },
+    { '@type': 'ListItem', position: 2, name: 'Blog', item: `${site}/es/blog/` },
+    { '@type': 'ListItem', position: 3, name: 'Section 8 en Los Ángeles', item: pageUrl },
+  ],
+};
+---
+
+<BlogArticleLayout
+  title={title}
+  description={description}
+  canonical={slugPath}
+  lang="es"
+  author="Equipo Section 8 Calculator"
+  authorTitle="Editorial"
+  readingTime={readingTime}
+  updatedDate={updatedDate}
+  tags={tags}
+  heroImage={image}
+  tocItems={tocItems}
+>
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(articleSchema)} />
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(faqSchema)} />
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(breadcrumbSchema)} />
+  <Content />
+</BlogArticleLayout>

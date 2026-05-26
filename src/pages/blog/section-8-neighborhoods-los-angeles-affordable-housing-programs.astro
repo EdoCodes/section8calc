@@ -1,0 +1,139 @@
+---
+import BlogArticleLayout, { type BlogTocItem } from '../../components/BlogArticleLayout.astro';
+import { getEntry, render } from 'astro:content';
+
+const entry = await getEntry('blog', 'section-8-neighborhoods-los-angeles-affordable-housing-programs');
+if (!entry) throw new Error('Blog entry section-8-neighborhoods-los-angeles-affordable-housing-programs not found');
+
+const { Content } = await render(entry);
+const { title, description, pubDate, tags, image } = entry.data;
+
+const slugPath = '/blog/section-8-neighborhoods-los-angeles-affordable-housing-programs';
+const site = Astro.site?.href?.replace(/\/$/, '') ?? 'https://section8calculator.com';
+const pageUrl = `${site}${slugPath}`;
+
+const publishDate = pubDate.toISOString().slice(0, 10);
+const updatedDate = entry.data.updatedDate
+  ? entry.data.updatedDate.toISOString().slice(0, 10)
+  : publishDate;
+
+const wordCount = (entry.body ?? '').trim().split(/\s+/).filter(Boolean).length;
+const readingTime = `${Math.max(1, Math.ceil(wordCount / 200))} min read`;
+
+const tocItems: BlogTocItem[] = [
+  { href: '#how-section-8-is-organized-in-los-angeles', label: 'How Section 8 is organized in LA' },
+  { href: '#where-section-8-housing-is-concentrated-in-los-angeles', label: 'Where vouchers are concentrated' },
+  { href: '#why-vouchers-cluster-in-certain-los-angeles-neighborhoods', label: 'Why vouchers cluster' },
+  { href: '#major-section-8-and-affordable-housing-programs-in-los-angeles-city--county', label: 'LA housing programs' },
+  { href: '#how-policy-changes-are-shaping-section-8-areas-going-forward', label: 'Policy changes ahead' },
+  { href: '#people-also-ask-section-8-areas-in-los-angeles', label: 'People also ask' },
+  { href: '#faqs-getting-section-8-and-affordable-housing-help-in-los-angeles', label: 'FAQs' },
+  { href: '#sources', label: 'Sources' },
+];
+
+const articleSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: title,
+  description,
+  image: image ? [`${site}${image}`] : [],
+  datePublished: publishDate,
+  dateModified: updatedDate,
+  author: {
+    '@type': 'Organization',
+    name: 'Section 8 Calculator',
+    url: site,
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'Section 8 Calculator',
+    url: site,
+    logo: { '@type': 'ImageObject', url: `${site}/favicon.svg` },
+  },
+  mainEntityOfPage: { '@type': 'WebPage', '@id': pageUrl },
+};
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: 'What parts of Los Angeles have the most Section 8 housing?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'South Los Angeles, parts of central LA just south of downtown, and portions of the Harbor and San Fernando Valley have the highest concentrations of voucher households. Voucher movement into the Antelope Valley (Lancaster, Palmdale) has also been significant.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Why are Section 8 vouchers less common on the Westside and in coastal LA?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Coastal and Westside neighborhoods have higher rents, more single-family homes, tighter zoning, and intense competition from higher-income renters. Even with SAFMR-based higher payment tiers, many landlords still avoid voucher participation.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Who runs Section 8 in Los Angeles City and County?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'HACLA (Housing Authority of the City of Los Angeles) runs Section 8 within city limits. LACDA (Los Angeles County Development Authority) runs it for unincorporated county areas and participating cities, serving over 28,000 families.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'How long is the Section 8 waiting list in LA?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Average wait times are about 24 months for HACLA and 27 months for LACDA. HACLA has historically opened its citywide waiting list via lottery only after many years of closure.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Can Section 8 be used in high-opportunity neighborhoods like Silver Lake or Mar Vista?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Yes. HACLA tiered payment standards have raised caps in higher-opportunity ZIP codes like 90039 (Silver Lake) and 90066 (Mar Vista). In practice, unit scarcity and landlord reluctance limit usage, but it is legally allowed.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'How is Los Angeles County trying to increase affordable housing supply?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Through Prop HHH bonds ($1.2B for supportive housing), County Affordable Housing Trust Fund, PLHA Five-Year Plan, and LACAHSA Measure A-funded NOFAs including a $200M 2025-26 funding round to accelerate affordable housing production.',
+      },
+    },
+  ],
+};
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: `${site}/` },
+    { '@type': 'ListItem', position: 2, name: 'Blog', item: `${site}/blog/` },
+    { '@type': 'ListItem', position: 3, name: 'Section 8 Neighborhoods in Los Angeles', item: pageUrl },
+  ],
+};
+---
+
+<BlogArticleLayout
+  title={title}
+  description={description}
+  canonical={slugPath}
+  lang="en"
+  author="Section 8 Calculator Team"
+  authorTitle="Editorial"
+  readingTime={readingTime}
+  updatedDate={updatedDate}
+  tags={tags}
+  heroImage={image}
+  tocItems={tocItems}
+>
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(articleSchema)} />
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(faqSchema)} />
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(breadcrumbSchema)} />
+  <Content />
+</BlogArticleLayout>
