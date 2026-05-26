@@ -1,17 +1,15 @@
 ---
+export const prerender = false;
+
 import BaseLayout from '../../../../layouts/BaseLayout.astro';
 import Section8StatePage from '../../../../components/Section8StatePage.astro';
-import { getPlacesForState, states } from '../../../../lib/places';
+import { getPlacesForState, getStateBySlug } from '../../../../lib/places';
 import { statePath } from '../../../../lib/i18n';
 
-export function getStaticPaths() {
-  return states.map((state) => ({
-    params: { state: state.slug },
-    props: { state },
-  }));
-}
+const state = getStateBySlug(Astro.params.state!);
+if (!state) return Astro.redirect('/es/section-8/');
 
-const { state } = Astro.props;
+Astro.response.headers.set('Cache-Control', 'public, max-age=86400, s-maxage=604800');
 const places = getPlacesForState(state.abbr);
 const title = `Section 8 en ${state.name} — ${state.placeCount.toLocaleString()} ciudades`;
 const description = `Límites de ingreso Section 8 y estimaciones de voucher para ${state.placeCount.toLocaleString()} ciudades en ${state.name}.`;
