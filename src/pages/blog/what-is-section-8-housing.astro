@@ -30,6 +30,8 @@ const tocItems: BlogTocItem[] = [
   { href: '#rights-and-responsibilities', label: 'Rights & responsibilities' },
   { href: '#common-questions-about-section-8', label: 'Common questions' },
   { href: '#section-8-vs-other-housing-programs', label: 'Section 8 vs. other programs' },
+  { href: '#faqs-section-8-terms-and-concepts', label: 'FAQs: Key terms' },
+  { href: '#people-also-ask', label: 'People also ask' },
   { href: '#next-steps', label: 'Next steps' },
   { href: '#sources', label: 'Sources' },
 ];
@@ -106,6 +108,54 @@ const faqSchema = {
       acceptedAnswer: {
         '@type': 'Answer',
         text: 'Yes. HUD offers a Housing Choice Voucher Homeownership Program that lets qualifying families use their voucher toward a mortgage payment instead of rent. Not all PHAs offer this option.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Why is it called Section 8?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'The name comes from Section 8 of the U.S. Housing Act of 1937, where the original rental-assistance language was written. The Housing and Community Development Act of 1974 expanded it to allow rent subsidies in privately owned apartments. In 1998 it was renamed the Housing Choice Voucher Program, but the nickname stuck.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'What is a PHA (Public Housing Authority)?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'A PHA is the local government body that administers Section 8 vouchers and public housing in a specific city, county, or state. There are roughly 3,300 PHAs across the U.S. They accept applications, manage waiting lists, issue vouchers, inspect units, and pay landlords.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'What is HUD?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'HUD is the U.S. Department of Housing and Urban Development, the federal cabinet agency that oversees housing programs. HUD sets Section 8 rules (income limits, Fair Market Rents, inspection standards), allocates funding to local PHAs, and enforces fair housing laws.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'What is HQS (Housing Quality Standards)?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: "HQS are HUD's minimum safety, sanitation, and habitability requirements for Section 8 units. A PHA inspector checks for working smoke detectors, safe electrical systems, functioning plumbing and heating, and structural soundness before approving a unit for voucher payments.",
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'What is TTP (Total Tenant Payment)?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'TTP is the amount you pay out of pocket toward rent and utilities each month under Section 8. It is typically 30% of your adjusted gross income, though it can be 10% of gross income or a PHA minimum rent if those are higher. The voucher covers the rest up to the payment standard.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Can non-citizens apply for Section 8?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Yes, with conditions. At least one household member must have eligible immigration status (U.S. citizen, national, or certain lawfully admitted immigrants). Mixed-status households receive a prorated benefit based on the share of eligible members. Undocumented immigrants are not eligible.',
       },
     },
   ],
