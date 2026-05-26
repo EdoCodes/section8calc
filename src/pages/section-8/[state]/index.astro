@@ -1,15 +1,17 @@
 ---
-export const prerender = false;
-
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import Section8StatePage from '../../../components/Section8StatePage.astro';
-import { getPlacesForState, getStateBySlug } from '../../../lib/places';
+import { getPlacesForState, states } from '../../../lib/places';
 import { statePath } from '../../../lib/i18n';
 
-const state = getStateBySlug(Astro.params.state!);
-if (!state) return Astro.redirect('/section-8/');
+export function getStaticPaths() {
+  return states.map((state) => ({
+    params: { state: state.slug },
+    props: { state },
+  }));
+}
 
-Astro.response.headers.set('Cache-Control', 'public, max-age=86400, s-maxage=604800');
+const { state } = Astro.props;
 const places = getPlacesForState(state.abbr);
 const title = `Section 8 Housing in ${state.name} — ${state.placeCount.toLocaleString()} Cities`;
 const description = `Section 8 income limits and voucher estimates for ${state.placeCount.toLocaleString()} cities and places in ${state.name}. Find your city and use the calculator.`;

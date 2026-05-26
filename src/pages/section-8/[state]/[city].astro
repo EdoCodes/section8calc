@@ -1,20 +1,16 @@
 ---
-export const prerender = false;
-
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import CityPageContent from '../../../components/CityPageContent.astro';
 import { getCityFaq } from '../../../lib/city-content';
 import { getCityEnrichmentMeta, getCityExtraFaq } from '../../../lib/city-enrichment';
-import { getPlace, getStateBySlug } from '../../../lib/places';
+import { getAllCityPaths } from '../../../lib/places';
+import type { PlaceRecord, StateMeta } from '../../../lib/places';
 
-const stateSlug = Astro.params.state!;
-const citySlug = Astro.params.city!;
-const state = getStateBySlug(stateSlug);
-if (!state) return Astro.redirect('/section-8/');
-const place = getPlace(stateSlug, citySlug);
-if (!place) return Astro.redirect(`/section-8/${stateSlug}/`);
+export function getStaticPaths() {
+  return getAllCityPaths();
+}
 
-Astro.response.headers.set('Cache-Control', 'public, max-age=86400, s-maxage=604800');
+const { place, state } = Astro.props as { place: PlaceRecord; state: StateMeta };
 
 const countyList = place.counties.join(', ');
 const enrichmentMeta = await getCityEnrichmentMeta(state.slug, place.slug, 'en');
