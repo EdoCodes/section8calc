@@ -93,16 +93,37 @@ const esCanonical = lang === 'es' ? canonical : altCanonical;
     </main>
 
     <footer class="site-footer">
-      <div class="container">
-        <p>
-          <strong>{lang === 'es' ? 'Aviso:' : 'Disclaimer:'}</strong> {s.footerDisclaimer}
-        </p>
-        <p>
-          <a href={calcPath(lang)}>{s.calcLink}</a>
-          {' '}· <a href={citiesPath(lang)}>{s.citiesLink}</a>
-          {' '}· <a href={guidesPath(lang)}>{s.guidesLink}</a>
-          {' '}· <a href={blogPath(lang)}>{s.blogLink}</a>
-        </p>
+      <div class="container footer-grid">
+        <div class="footer-col">
+          <p class="footer-brand">
+            <strong>{s.siteName}</strong>
+          </p>
+          <p class="footer-tagline">{s.siteTagline}</p>
+          <p class="footer-copy">&copy; {new Date().getFullYear()} Section 8 Calculator</p>
+        </div>
+
+        <div class="footer-col">
+          <h4 class="footer-heading">{lang === 'es' ? 'Herramientas' : 'Tools'}</h4>
+          <ul class="footer-links">
+            <li><a href={calcPath(lang)}>{s.calcLink}</a></li>
+            <li><a href={citiesPath(lang)}>{s.citiesLink}</a></li>
+            <li><a href={guidesPath(lang)}>{s.guidesLink}</a></li>
+            <li><a href={blogPath(lang)}>{s.blogLink}</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4 class="footer-heading">{lang === 'es' ? 'Empresa' : 'Company'}</h4>
+          <ul class="footer-links">
+            <li><a href={lang === 'es' ? '/es/sobre-nosotros/' : '/about/'}>{lang === 'es' ? 'Sobre nosotros' : 'About Us'}</a></li>
+            <li><a href={lang === 'es' ? '/es/contacto/' : '/contact/'}>{lang === 'es' ? 'Contáctenos' : 'Contact Us'}</a></li>
+            <li><a href={lang === 'es' ? '/es/aviso-legal/' : '/disclaimer/'}>{lang === 'es' ? 'Aviso legal' : 'Disclaimer'}</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="container footer-bottom">
+        <p>{s.footerDisclaimer}</p>
       </div>
     </footer>
     <SiteAnalytics />

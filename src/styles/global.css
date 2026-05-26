@@ -209,10 +209,92 @@ img {
 
 .site-footer {
   margin-top: 4rem;
-  padding: 2rem 0;
+  padding: 2.5rem 0 1.5rem;
   border-top: 1px solid var(--color-border);
   color: var(--color-ink-muted);
   font-size: 0.9rem;
+  background: var(--color-navy, #1b2a4a);
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.site-footer a {
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: none;
+}
+
+.site-footer a:hover {
+  color: var(--color-accent);
+  text-decoration: underline;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.75rem;
+}
+
+@media (min-width: 640px) {
+  .footer-grid {
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 2.5rem;
+  }
+}
+
+.footer-col {
+  min-width: 0;
+}
+
+.footer-brand {
+  font-size: 1.05rem;
+  margin: 0 0 0.25rem;
+  color: #fff;
+}
+
+.footer-tagline {
+  margin: 0 0 0.5rem;
+  font-size: 0.85rem;
+}
+
+.footer-copy {
+  margin: 0;
+  font-size: 0.82rem;
+  opacity: 0.6;
+}
+
+.footer-heading {
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.5);
+  margin: 0 0 0.65rem;
+}
+
+.footer-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-links li {
+  margin: 0 0 0.4rem;
+}
+
+.footer-links a {
+  font-size: 0.9rem;
+}
+
+.footer-bottom {
+  margin-top: 1.75rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.8rem;
+  opacity: 0.6;
+  line-height: 1.5;
+}
+
+.footer-bottom p {
+  margin: 0;
 }
 
 .form-field {

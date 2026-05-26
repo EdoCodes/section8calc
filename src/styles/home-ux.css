@@ -351,12 +351,8 @@ body.page-home .home-state-directory__more {
 
 /* —— Footer (homepage) —— */
 body.page-home .site-footer {
-  font-size: 0.98rem;
+  font-size: 0.9rem;
   line-height: 1.55;
-}
-
-body.page-home .site-footer a {
-  font-weight: 600;
 }
 
 /* Keep calculator CTA visible on phones — landing page primary action */
