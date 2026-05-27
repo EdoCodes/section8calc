@@ -59,7 +59,7 @@ export type CalcStrings = {
 
 const enCalc: CalcStrings = {
   title: 'Section 8 eligibility & rent estimate',
-  subtitle: 'Enter your ZIP, confirm your area, then see HUD income limits and estimated voucher help.',
+  subtitle: 'Enter your ZIP, confirm your city, and see if you qualify for rental help — and how much you could receive.',
   stepLocation: 'Location',
   stepHousehold: 'Household',
   stepResults: 'Your estimate',
@@ -118,7 +118,7 @@ const enCalc: CalcStrings = {
 const esCalc: CalcStrings = {
   title: 'Elegibilidad Section 8 y estimación de renta',
   subtitle:
-    'Ingrese su código postal, confirme su área y vea los límites de ingreso HUD y la ayuda estimada del voucher.',
+    'Ingrese su código postal, confirme su ciudad y vea si califica para ayuda con la renta y cuánto podría recibir.',
   stepLocation: 'Ubicación',
   stepHousehold: 'Hogar',
   stepResults: 'Su estimación',
