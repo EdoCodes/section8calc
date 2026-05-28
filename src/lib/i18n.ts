@@ -59,7 +59,7 @@ export type CalcStrings = {
 
 const enCalc: CalcStrings = {
   title: 'Section 8 eligibility & rent estimate',
-  subtitle: 'Enter your ZIP, confirm your city, and see if you qualify for rental help — and how much you could receive.',
+  subtitle: 'Enter your ZIP, follow steps, and see if you qualify for rental help.',
   stepLocation: 'Location',
   stepHousehold: 'Household',
   stepResults: 'Your estimate',
@@ -117,8 +117,7 @@ const enCalc: CalcStrings = {
 
 const esCalc: CalcStrings = {
   title: 'Elegibilidad Section 8 y estimación de renta',
-  subtitle:
-    'Ingrese su código postal, confirme su ciudad y vea si califica para ayuda con la renta y cuánto podría recibir.',
+  subtitle: 'Ingrese su código postal, siga los pasos y vea si califica para ayuda con la renta.',
   stepLocation: 'Ubicación',
   stepHousehold: 'Hogar',
   stepResults: 'Su estimación',
