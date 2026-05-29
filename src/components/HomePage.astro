@@ -60,7 +60,22 @@ const guides = rawGuides.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDat
     padding-bottom: 1.5rem;
   }
   .home-calculator-band {
-    margin-top: -3.25rem;
+    position: relative;
+    z-index: 3;
+    margin-top: -2.5rem;
+    padding-top: 0.25rem;
+  }
+  .home-calculator-band::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100vw;
+    top: -2rem;
+    bottom: 0;
+    background: var(--color-surface);
+    z-index: -1;
+    pointer-events: none;
   }
   .home-calculator-band :global(.calc-shell) {
     margin-top: 0;

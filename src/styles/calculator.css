@@ -1,5 +1,28 @@
 /* Calculator UI — aligned with perdiemcalculator.com panels */
 
+/* Dedicated calculator page: block hero subtitle bleed-through, hide duplicate subtitle */
+.calc-page-wide {
+  position: relative;
+  z-index: 3;
+}
+
+.calc-page-wide::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100vw;
+  top: 0;
+  bottom: 0;
+  background: var(--color-surface);
+  z-index: -1;
+  pointer-events: none;
+}
+
+.calc-page-wide .calc-panel__head > p {
+  display: none;
+}
+
 .calc-shell {
   margin-top: -2rem;
   padding-bottom: 3rem;

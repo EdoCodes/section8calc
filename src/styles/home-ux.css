@@ -68,6 +68,11 @@ body.page-home .home-calculator-band :global(.calc-shell) {
   margin-top: 0;
 }
 
+/* Hero already shows the subtitle — hide duplicate in form panel */
+body.page-home .calc-panel__head > p {
+  display: none;
+}
+
 body.page-home .calc-hero__lead {
   font-size: 1.15rem;
   max-width: 40rem;
